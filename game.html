@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Phantom Games | Змейка (AI) + Крестики-нолики (VS AI)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
+            font-family: 'Segoe UI', 'Poppins', 'Orbitron', 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(80, 180, 255, 0.08) 0%, rgba(0,0,0,0) 70%);
+            top: -50%;
+            left: -50%;
+            animation: rotateGlow 24s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+
+        .menu-container, .game-container {
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+            background: rgba(10, 20, 35, 0.55);
+            border-radius: 56px;
+            padding: 20px 24px;
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0, 210, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            min-width: 280px;
+        }
+
+        .menu-item {
+            position: relative;
+            cursor: pointer;
+            padding: 14px 28px;
+            background: rgba(0, 10, 25, 0.7);
+            border-radius: 60px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            color: #bbf0ff;
+            transition: 0.25s;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            text-transform: uppercase;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .menu-item:hover {
+            background: rgba(0, 160, 210, 0.8);
+            color: #fff;
+            text-shadow: 0 0 6px cyan;
+            border-color: cyan;
+            transform: scale(1.02);
+        }
+
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+
+        .game-container {
+            display: none;
+            flex-direction: row;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 1100px;
+        }
+
+        .canvas-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background-color: #0a121f;
+            border: 2px solid cyan;
+            box-shadow: 0 0 20px rgba(0,255,255,0.3);
+            border-radius: 12px;
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            padding: 16px 20px;
+            min-width: 260px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            color: #bbf0ff;
+        }
+
+        .info-panel h3 {
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 12px;
+            border-bottom: 1px solid cyan;
+            display: inline-block;
+        }
+
+        .score-board {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .history-list, .inventory-list {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            list-style: none;
+            padding-left: 5px;
+        }
+
+        .history-list li, .inventory-list li {
+            margin: 5px 0;
+            font-family: monospace;
+        }
+
+        .game-buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .game-btn {
+            background: rgba(0, 160, 210, 0.7);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .game-btn:hover {
+            background: cyan;
+            color: black;
+            box-shadow: 0 0 8px cyan;
+        }
+
+        .settings-panel {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 12px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 24px;
+            background: #333;
+            border-radius: 30px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .toggle-switch.active {
+            background: #0ff;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            transition: 0.2s;
+        }
+
+        .toggle-switch.active::after {
+            left: 27px;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.5);
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to { transform: scale(8); opacity: 0; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .menu-container, .game-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .tic-tac-toe-status {
+            margin: 15px 0;
+            font-size: 1.2rem;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 8px;
+            border-radius: 28px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Главное меню -->
+<div class="menu-container" id="mainMenu">
+    <ul class="menu">
+        <li class="menu-item" data-game="snake">🐍 ЗМЕЙКА</li>
+        <li class="menu-item" data-game="tictactoe">❌ КРЕСТИКИ-НОЛИКИ (VS AI)</li>
+        <li class="menu-item" data-action="settings">⚙️ НАСТРОЙКИ</li>
+        <li class="menu-item" data-action="exit">🚪 ВЫХОД</li>
+    </ul>
+    <div id="settingsArea" style="margin-top: 20px; display: none;">
+        <div class="settings-panel">
+            <span>🔊 ЗВУК</span>
+            <div id="soundToggle" class="toggle-switch active"></div>
+            <span>🤖 ЗМЕЙКА: ИИ РЕЖИМ</span>
+            <div id="snakeAIToggle" class="toggle-switch"></div>
+        </div>
+    </div>
+    <div class="glow-text" style="text-align:center; margin-top:20px;">PHANTOM INTERACTIVE // ВЫБЕРИ ИГРУ</div>
+</div>
+
+<!-- Игровой контейнер -->
+<div class="game-container" id="gameContainer">
+    <div class="canvas-area">
+        <canvas id="gameCanvas" width="500" height="500"></canvas>
+        <div class="game-buttons">
+            <button class="game-btn" id="restartGameBtn">🔄 Новая игра</button>
+            <button class="game-btn" id="exitToMenuBtn">🏠 Выйти в меню</button>
+        </div>
+    </div>
+    <div class="info-panel" id="infoPanel"></div>
+</div>
+
+<script>
+    // ======================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ========================
+    let soundEnabled = true;
+    let snakeAIMode = false;      // ИИ для змейки (выкл по умолчанию)
+    let audioCtx = null;
+    let currentGame = null;
+    let gameLoop = null;
+    let powerupGenerator = null;
+    
+    // Настройки звука и ИИ
+    const soundToggleBtn = document.getElementById('soundToggle');
+    const snakeAIToggle = document.getElementById('snakeAIToggle');
+    
+    soundToggleBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        if (soundEnabled) {
+            soundToggleBtn.classList.add('active');
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        } else {
+            soundToggleBtn.classList.remove('active');
+        }
+    });
+    
+    snakeAIToggle.addEventListener('click', () => {
+        snakeAIMode = !snakeAIMode;
+        if (snakeAIMode) {
+            snakeAIToggle.classList.add('active');
+            // Если змейка уже запущена, нужно отключить управление с клавиатуры и включить ИИ
+            if (currentGame === 'snake' && snakeGame.gameActive && !snakeGame.gameOverFlag) {
+                // Отключаем обработчик клавиш
+                if (keydownHandler) {
+                    window.removeEventListener('keydown', keydownHandler);
+                    keydownHandler = null;
+                }
+                // ИИ начнёт управлять на следующем шаге
+            }
+        } else {
+            snakeAIToggle.classList.remove('active');
+            // Если змейка активна, возвращаем управление игроку
+            if (currentGame === 'snake' && snakeGame.gameActive && !snakeGame.gameOverFlag) {
+                if (!keydownHandler) {
+                    keydownHandler = (e) => snakeGame.handleKey(e);
+                    window.addEventListener('keydown', keydownHandler);
+                }
+            }
+        }
+    });
+    
+    function initAudio() {
+        if (audioCtx) return;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) { console.warn("Web Audio not supported"); }
+    }
+    
+    function playBeep(freq, duration, volume = 0.15) {
+        if (!soundEnabled || !audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = freq;
+        gain.gain.value = volume;
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.stop(now + duration);
+    }
+    
+    function playClickSound() { playBeep(660, 0.08, 0.1); }
+    function playWinSound() { playBeep(880, 0.3, 0.2); }
+    function playDrawSound() { playBeep(440, 0.2, 0.15); }
+    
+    // ======================== ЗМЕЙКА С ПОДДЕРЖКОЙ ИИ ========================
+    let snakeGame = {
+        boardSize: 20,
+        cellSize: 25,
+        snake: [],
+        direction: 'RIGHT',
+        nextDirection: 'RIGHT',
+        food: {x:12, y:12},
+        score: 0,
+        scoreHistory: [],
+        powerups: [],
+        activeEffects: [],
+        gameActive: false,
+        gameOverFlag: false,
+        baseInterval: 160,
+        currentInterval: 160,
+        
+        init() {
+            const startX = Math.floor(this.boardSize/2);
+            const startY = Math.floor(this.boardSize/2);
+            this.snake = [
+                {x: startX, y: startY},
+                {x: startX-1, y: startY},
+                {x: startX-2, y: startY}
+            ];
+            this.direction = 'RIGHT';
+            this.nextDirection = 'RIGHT';
+            this.score = 0;
+            this.scoreHistory = [];
+            this.activeEffects = [];
+            this.powerups = [];
+            this.gameActive = true;
+            this.gameOverFlag = false;
+            this.currentInterval = this.baseInterval;
+            this.generateRandomFood();
+            this.updateUI();
+        },
+        
+        generateRandomFood() {
+            const freeCells = [];
+            for (let i = 0; i < this.boardSize; i++) {
+                for (let j = 0; j < this.boardSize; j++) {
+                    if (!this.snake.some(seg => seg.x === i && seg.y === j) && 
+                        !this.powerups.some(p => p.x === i && p.y === j)) {
+                        freeCells.push({x: i, y: j});
+                    }
+                }
+            }
+            if (freeCells.length > 0) {
+                const rand = Math.floor(Math.random() * freeCells.length);
+                this.food = freeCells[rand];
+            }
+        },
+        
+        spawnPowerup() {
+            if (!this.gameActive || this.gameOverFlag) return;
+            const type = Math.random() < 0.5 ? 'speed' : 'slow';
+            let freePos = null;
+            for (let i = 0; i < this.boardSize; i++) {
+                for (let j = 0; j < this.boardSize; j++) {
+                    if (!this.snake.some(seg => seg.x === i && seg.y === j) && 
+                        !(this.food.x === i && this.food.y === j) &&
+                        !this.powerups.some(p => p.x === i && p.y === j)) {
+                        freePos = {x: i, y: j};
+                        break;
+                    }
+                }
+                if (freePos) break;
+            }
+            if (freePos) {
+                this.powerups.push({
+                    x: freePos.x,
+                    y: freePos.y,
+                    type: type,
+                    expireTime: Date.now() + 8000
+                });
+            }
+        },
+        
+        collectPowerup(p) {
+            const now = Date.now();
+            let effectTime = 10000;
+            if (p.type === 'speed') {
+                this.activeEffects.push({ type: 'speed', endTime: now + effectTime });
+                if (soundEnabled) playBeep(660, 0.15, 0.2);
+            } else if (p.type === 'slow') {
+                this.activeEffects.push({ type: 'slow', endTime: now + effectTime });
+                if (soundEnabled) playBeep(440, 0.15, 0.2);
+            }
+            this.activeEffects = this.activeEffects.filter(e => e.endTime > now);
+            this.updateMoveInterval();
+            this.updateInventoryUI();
+        },
+        
+        updateMoveInterval() {
+            let newInterval = this.baseInterval;
+            let speedActive = false, slowActive = false;
+            const now = Date.now();
+            for (let eff of this.activeEffects) {
+                if (eff.type === 'speed' && eff.endTime > now) speedActive = true;
+                if (eff.type === 'slow' && eff.endTime > now) slowActive = true;
+            }
+            if (speedActive && !slowActive) newInterval = this.baseInterval * 0.55;
+            else if (slowActive && !speedActive) newInterval = this.baseInterval * 1.8;
+            if (newInterval !== this.currentInterval) {
+                this.currentInterval = newInterval;
+                if (this.gameActive && !this.gameOverFlag) {
+                    if (gameLoop) clearTimeout(gameLoop);
+                    startGameLoop();
+                }
+            }
+        },
+        
+        // ---- Функция ИИ: выбирает наилучшее направление с помощью BFS ----
+        getAIDirection() {
+            const head = this.snake[0];
+            const target = this.food;
+            
+            // BFS для поиска пути к еде
+            const queue = [{x: head.x, y: head.y, path: []}];
+            const visited = Array(this.boardSize).fill().map(() => Array(this.boardSize).fill(false));
+            visited[head.x][head.y] = true;
+            
+            const directions = [
+                {dx: 1, dy: 0, dir: 'RIGHT'},
+                {dx: -1, dy: 0, dir: 'LEFT'},
+                {dx: 0, dy: -1, dir: 'UP'},
+                {dx: 0, dy: 1, dir: 'DOWN'}
+            ];
+            
+            while (queue.length > 0) {
+                const {x, y, path} = queue.shift();
+                if (x === target.x && y === target.y) {
+                    if (path.length > 0) return path[0];
+                    else return this.direction; // уже на еде (не должно быть)
+                }
+                for (const d of directions) {
+                    const nx = x + d.dx;
+                    const ny = y + d.dy;
+                    if (nx >= 0 && nx < this.boardSize && ny >= 0 && ny < this.boardSize && !visited[nx][ny]) {
+                        // Проверяем, не занято ли тело змейки (кроме хвоста, т.к. он уйдёт)
+                        let occupied = false;
+                        for (let i = 0; i < this.snake.length; i++) {
+                            if (this.snake[i].x === nx && this.snake[i].y === ny) {
+                                // если это не хвост или если мы не собираемся есть еду (но здесь BFS до еды)
+                                // для безопасности: если клетка занята змейкой, то только если это не хвост и не еда? 
+                                // упростим: запрещаем все клетки змейки, кроме возможного хвоста (но хвост может сдвинуться)
+                                // Но BFS ищет путь к еде, поэтому если еда не достигнута, то хвост ещё не сдвинут.
+                                // Лучше: запрещаем все клетки, где есть змейка, кроме последнего сегмента, если он не будет съеден
+                                if (i !== this.snake.length-1) occupied = true;
+                                else {
+                                    // хвост может освободиться, но только если мы не на еде. В BFS до еды - хвост не освободится
+                                    occupied = true;
+                                }
+                                break;
+                            }
+                        }
+                        if (!occupied) {
+                            visited[nx][ny] = true;
+                            const newPath = [...path, d.dir];
+                            queue.push({x: nx, y: ny, path: newPath});
+                        }
+                    }
+                }
+            }
+            
+            // Если путь не найден (тупик), пробуем безопасное направление (не врезаться)
+            const safeDirs = [];
+            for (const d of directions) {
+                const nx = head.x + d.dx;
+                const ny = head.y + d.dy;
+                if (nx >= 0 && nx < this.boardSize && ny >= 0 && ny < this.boardSize) {
+                    let collision = false;
+                    for (let i = 0; i < this.snake.length; i++) {
+                        if (this.snake[i].x === nx && this.snake[i].y === ny) {
+                            collision = true;
+                            break;
+                        }
+                    }
+                    if (!collision) safeDirs.push(d.dir);
+                }
+            }
+            if (safeDirs.length > 0) return safeDirs[0];
+            // Если всё плохо, возвращаем текущее направление (надеемся на лучшее)
+            return this.direction;
+        },
+        
+        step() {
+            if (!this.gameActive || this.gameOverFlag) return;
+            
+            // Если включён ИИ, вычисляем следующее направление
+            if (snakeAIMode) {
+                const aiDir = this.getAIDirection();
+                this.nextDirection = aiDir;
+            }
+            
+            this.direction = this.nextDirection;
+            let newHead = {...this.snake[0]};
+            switch(this.direction) {
+                case 'RIGHT': newHead.x += 1; break;
+                case 'LEFT': newHead.x -= 1; break;
+                case 'UP': newHead.y -= 1; break;
+                case 'DOWN': newHead.y += 1; break;
+            }
+            if (newHead.x < 0 || newHead.x >= this.boardSize || newHead.y < 0 || newHead.y >= this.boardSize) {
+                this.gameOver();
+                return;
+            }
+            let willEat = (newHead.x === this.food.x && newHead.y === this.food.y);
+            let selfCollision = false;
+            for (let i = 0; i < this.snake.length; i++) {
+                if (!willEat && i === this.snake.length-1) continue;
+                if (this.snake[i].x === newHead.x && this.snake[i].y === newHead.y) {
+                    selfCollision = true;
+                    break;
+                }
+            }
+            if (selfCollision) {
+                this.gameOver();
+                return;
+            }
+            this.snake.unshift(newHead);
+            if (!willEat) {
+                this.snake.pop();
+            } else {
+                this.score++;
+                this.scoreHistory.unshift({ score: this.score, time: new Date().toLocaleTimeString() });
+                if (this.scoreHistory.length > 15) this.scoreHistory.pop();
+                if (soundEnabled) playBeep(880, 0.1, 0.15);
+                this.generateRandomFood();
+                this.updateUI();
+            }
+            for (let i = 0; i < this.powerups.length; i++) {
+                if (this.powerups[i].x === newHead.x && this.powerups[i].y === newHead.y) {
+                    this.collectPowerup(this.powerups[i]);
+                    this.powerups.splice(i,1);
+                    i--;
+                }
+            }
+            const now = Date.now();
+            this.powerups = this.powerups.filter(p => p.expireTime > now);
+            this.activeEffects = this.activeEffects.filter(e => e.endTime > now);
+            this.updateMoveInterval();
+            this.updateInventoryUI();
+            this.draw();
+        },
+        
+        gameOver() {
+            if (this.gameOverFlag) return;
+            this.gameActive = false;
+            this.gameOverFlag = true;
+            if (soundEnabled) playBeep(220, 0.4, 0.25);
+            this.draw();
+            const ctx = document.getElementById('gameCanvas').getContext('2d');
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            ctx.fillRect(0,0,500,500);
+            ctx.font = 'bold 24px Orbitron';
+            ctx.fillStyle = 'cyan';
+            ctx.fillText('GAME OVER', 150, 250);
+        },
+        
+        draw() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const cs = this.cellSize;
+            ctx.clearRect(0,0,500,500);
+            ctx.strokeStyle = '#1e3a5f';
+            for(let i=0;i<=this.boardSize;i++) {
+                ctx.beginPath();
+                ctx.moveTo(i*cs,0); ctx.lineTo(i*cs,500); ctx.stroke();
+                ctx.moveTo(0,i*cs); ctx.lineTo(500,i*cs); ctx.stroke();
+            }
+            ctx.fillStyle = '#ff3a6f';
+            ctx.fillRect(this.food.x*cs, this.food.y*cs, cs-1, cs-1);
+            for(let p of this.powerups) {
+                ctx.fillStyle = p.type === 'speed' ? '#88ff88' : '#ffaa44';
+                ctx.fillRect(p.x*cs, p.y*cs, cs-1, cs-1);
+                ctx.fillStyle = 'black';
+                ctx.font = `${cs-6}px monospace`;
+                ctx.fillText(p.type === 'speed' ? '⚡' : '🐢', p.x*cs+5, p.y*cs+18);
+            }
+            for(let i=0;i<this.snake.length;i++) {
+                let grad = ctx.createLinearGradient(this.snake[i].x*cs, this.snake[i].y*cs, this.snake[i].x*cs+cs, this.snake[i].y*cs+cs);
+                grad.addColorStop(0, '#2ecc71');
+                grad.addColorStop(1, '#27ae60');
+                ctx.fillStyle = grad;
+                ctx.fillRect(this.snake[i].x*cs, this.snake[i].y*cs, cs-1, cs-1);
+            }
+        },
+        
+        updateUI() {
+            document.getElementById('scoreDisplay').innerText = this.score;
+            const historyElem = document.getElementById('historyList');
+            historyElem.innerHTML = '';
+            if (this.scoreHistory.length === 0) historyElem.innerHTML = '<li>— пока нет очков —</li>';
+            else this.scoreHistory.forEach(entry => {
+                historyElem.innerHTML += `<li>🎯 ${entry.score} очков — ${entry.time}</li>`;
+            });
+            this.updateInventoryUI();
+        },
+        
+        updateInventoryUI() {
+            const invList = document.getElementById('inventoryList');
+            invList.innerHTML = '';
+            const now = Date.now();
+            const filtered = this.activeEffects.filter(e => e.endTime > now);
+            if (filtered.length === 0) invList.innerHTML = '<li>— нет активных бустов —</li>';
+            else filtered.forEach(e => {
+                const remainSec = ((e.endTime - now) / 1000).toFixed(1);
+                let name = e.type === 'speed' ? '⚡ Ускорение' : '🐢 Замедление';
+                invList.innerHTML += `<li>${name} : ${remainSec} с</li>`;
+            });
+        },
+        
+        handleKey(e) {
+            // Если включён ИИ, не реагируем на клавиши
+            if (snakeAIMode) return;
+            if (!this.gameActive || this.gameOverFlag) return;
+            const key = e.key;
+            let newDir = null;
+            if (key === 'w' || key === 'ArrowUp') newDir = 'UP';
+            else if (key === 's' || key === 'ArrowDown') newDir = 'DOWN';
+            else if (key === 'a' || key === 'ArrowLeft') newDir = 'LEFT';
+            else if (key === 'd' || key === 'ArrowRight') newDir = 'RIGHT';
+            if (newDir) {
+                const opposites = {'RIGHT':'LEFT','LEFT':'RIGHT','UP':'DOWN','DOWN':'UP'};
+                if (opposites[newDir] !== this.direction) {
+                    this.nextDirection = newDir;
+                }
+            }
+        }
+    };
+    
+    // ======================== КРЕСТИКИ-НОЛИКИ С ИИ ========================
+    let tttGame = {
+        board: Array(9).fill(null),
+        currentPlayer: 'X',
+        gameActive: true,
+        winner: null,
+        scores: { X: 0, O: 0 },
+        history: [],
+        cellSize: 500/3,
+        aiThinking: false,
+        
+        init() {
+            this.board = Array(9).fill(null);
+            this.currentPlayer = 'X';
+            this.gameActive = true;
+            this.winner = null;
+            this.aiThinking = false;
+            this.updateUI();
+            this.draw();
+        },
+        
+        makeMove(index, player) {
+            if (!this.gameActive) return false;
+            if (this.board[index] !== null) return false;
+            if (player !== this.currentPlayer) return false;
+            
+            this.board[index] = player;
+            if (soundEnabled) playClickSound();
+            
+            const winInfo = this.checkWin();
+            if (winInfo.won) {
+                this.gameActive = false;
+                this.winner = player;
+                this.scores[player]++;
+                const timeStr = new Date().toLocaleTimeString();
+                const winnerName = (player === 'X') ? 'Игрок (X)' : 'ИИ (O)';
+                this.history.unshift(`🏆 Победил ${winnerName} — ${timeStr}`);
+                if (this.history.length > 10) this.history.pop();
+                if (soundEnabled) playWinSound();
+                this.updateUI();
+                this.draw();
+                return true;
+            } else if (this.board.every(cell => cell !== null)) {
+                this.gameActive = false;
+                this.winner = 'draw';
+                const timeStr = new Date().toLocaleTimeString();
+                this.history.unshift(`🤝 Ничья — ${timeStr}`);
+                if (this.history.length > 10) this.history.pop();
+                if (soundEnabled) playDrawSound();
+                this.updateUI();
+                this.draw();
+                return true;
+            }
+            
+            this.currentPlayer = (this.currentPlayer === 'X') ? 'O' : 'X';
+            this.updateUI();
+            this.draw();
+            
+            if (this.gameActive && this.currentPlayer === 'O') {
+                this.aiMakeMove();
+            }
+            return true;
+        },
+        
+        aiMakeMove() {
+            if (!this.gameActive || this.currentPlayer !== 'O') return;
+            if (this.aiThinking) return;
+            this.aiThinking = true;
+            
+            setTimeout(() => {
+                if (!this.gameActive || this.currentPlayer !== 'O') {
+                    this.aiThinking = false;
+                    return;
+                }
+                const bestIndex = this.getBestMove();
+                if (bestIndex !== -1) {
+                    this.makeMove(bestIndex, 'O');
+                }
+                this.aiThinking = false;
+            }, 80);
+        },
+        
+        getBestMove() {
+            let bestScore = -Infinity;
+            let bestMove = -1;
+            for (let i = 0; i < 9; i++) {
+                if (this.board[i] === null) {
+                    this.board[i] = 'O';
+                    let score = this.minimax(this.board, 0, false);
+                    this.board[i] = null;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+            return bestMove;
+        },
+        
+        minimax(board, depth, isMaximizing) {
+            const winnerCheck = this.evaluateBoard(board);
+            if (winnerCheck === 1) return 10 - depth;
+            if (winnerCheck === -1) return -10 + depth;
+            if (board.every(cell => cell !== null)) return 0;
+            
+            if (isMaximizing) {
+                let best = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === null) {
+                        board[i] = 'O';
+                        best = Math.max(best, this.minimax(board, depth+1, false));
+                        board[i] = null;
+                    }
+                }
+                return best;
+            } else {
+                let best = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === null) {
+                        board[i] = 'X';
+                        best = Math.min(best, this.minimax(board, depth+1, true));
+                        board[i] = null;
+                    }
+                }
+                return best;
+            }
+        },
+        
+        evaluateBoard(board) {
+            const lines = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            for (let line of lines) {
+                const [a,b,c] = line;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    if (board[a] === 'O') return 1;
+                    if (board[a] === 'X') return -1;
+                }
+            }
+            return 0;
+        },
+        
+        checkWin() {
+            const lines = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            for (let line of lines) {
+                const [a,b,c] = line;
+                if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
+                    return { won: true, line: line };
+                }
+            }
+            return { won: false };
+        },
+        
+        draw() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const cs = this.cellSize;
+            ctx.clearRect(0,0,500,500);
+            ctx.strokeStyle = 'cyan';
+            ctx.lineWidth = 4;
+            for(let i=1;i<3;i++) {
+                ctx.beginPath();
+                ctx.moveTo(i*cs, 0);
+                ctx.lineTo(i*cs, 500);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i*cs);
+                ctx.lineTo(500, i*cs);
+                ctx.stroke();
+            }
+            ctx.font = `${cs*0.6}px "Segoe UI", "Orbitron"`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for(let i=0;i<9;i++) {
+                if(this.board[i]) {
+                    const x = (i%3)*cs + cs/2;
+                    const y = Math.floor(i/3)*cs + cs/2;
+                    ctx.fillStyle = this.board[i] === 'X' ? '#0ff' : '#f0f';
+                    ctx.fillText(this.board[i], x, y);
+                }
+            }
+            if (!this.gameActive && this.winner && this.winner !== 'draw') {
+                ctx.font = 'bold 28px Orbitron';
+                ctx.fillStyle = 'gold';
+                ctx.shadowBlur = 8;
+                const winnerText = (this.winner === 'X') ? 'ПОБЕДА ИГРОКА!' : 'ПОБЕДА ИИ!';
+                ctx.fillText(winnerText, 250, 60);
+                ctx.shadowBlur = 0;
+            } else if (!this.gameActive && this.winner === 'draw') {
+                ctx.font = 'bold 28px Orbitron';
+                ctx.fillStyle = 'white';
+                ctx.fillText('НИЧЬЯ', 250, 60);
+            } else {
+                ctx.font = '20px Orbitron';
+                ctx.fillStyle = '#bbf0ff';
+                const turnText = (this.currentPlayer === 'X') ? 'Ваш ход (X)' : 'Ход ИИ (O)...';
+                ctx.fillText(turnText, 250, 60);
+            }
+        },
+        
+        updateUI() {
+            const panel = document.getElementById('infoPanel');
+            panel.innerHTML = `
+                <h3>❌ КРЕСТИКИ-НОЛИКИ (VS AI)</h3>
+                <div class="score-board">Счёт: Игрок X ${this.scores.X} - ${this.scores.O} O (AI)</div>
+                <div class="tic-tac-toe-status" id="tttStatus">${this.gameActive ? (this.currentPlayer === 'X' ? 'Ваш ход ❌' : 'ИИ думает... ⭕') : (this.winner === 'draw' ? 'Ничья!' : (this.winner === 'X' ? 'Победа игрока!' : 'Победа ИИ!'))}</div>
+                <h3>📜 ИСТОРИЯ ПАРТИЙ</h3>
+                <ul class="history-list" id="historyListTTT">
+                    ${this.history.length === 0 ? '<li>— нет данных —</li>' : this.history.map(h => `<li>${h}</li>`).join('')}
+                </ul>
+                <div style="margin-top:15px; font-size:12px;">⚡ Кликайте по клеткам мышкой</div>
+            `;
+        },
+        
+        reset() {
+            this.board = Array(9).fill(null);
+            this.currentPlayer = 'X';
+            this.gameActive = true;
+            this.winner = null;
+            this.aiThinking = false;
+            this.updateUI();
+            this.draw();
+        }
+    };
+    
+    // ======================== УПРАВЛЕНИЕ ИГРАМИ ========================
+    let keydownHandler = null;
+    
+    function onCanvasClick(e) {
+        if (currentGame !== 'tictactoe') return;
+        if (!tttGame.gameActive) return;
+        if (tttGame.currentPlayer !== 'X') return;
+        
+        const rect = document.getElementById('gameCanvas').getBoundingClientRect();
+        const scaleX = document.getElementById('gameCanvas').width / rect.width;
+        const scaleY = document.getElementById('gameCanvas').height / rect.height;
+        const mouseX = (e.clientX - rect.left) * scaleX;
+        const mouseY = (e.clientY - rect.top) * scaleY;
+        const cs = 500/3;
+        const col = Math.floor(mouseX / cs);
+        const row = Math.floor(mouseY / cs);
+        if (col >= 0 && col < 3 && row >= 0 && row < 3) {
+            const index = row*3 + col;
+            tttGame.makeMove(index, 'X');
+        }
+    }
+    
+    function startGameLoop() {
+        if (gameLoop) clearTimeout(gameLoop);
+        function step() {
+            if (currentGame === 'snake' && snakeGame.gameActive && !snakeGame.gameOverFlag) {
+                snakeGame.step();
+                drawCurrentGame();
+                gameLoop = setTimeout(step, snakeGame.currentInterval);
+            } else if (currentGame === 'snake') {
+                gameLoop = setTimeout(step, 100);
+            } else {
+                return;
+            }
+        }
+        if (currentGame === 'snake') {
+            gameLoop = setTimeout(step, snakeGame.currentInterval);
+        }
+    }
+    
+    function drawCurrentGame() {
+        if (currentGame === 'snake') snakeGame.draw();
+        else if (currentGame === 'tictactoe') tttGame.draw();
+    }
+    
+    function startPowerupGeneratorSnake() {
+        if (powerupGenerator) clearTimeout(powerupGenerator);
+        function schedule() {
+            if (currentGame === 'snake' && snakeGame.gameActive && !snakeGame.gameOverFlag) {
+                snakeGame.spawnPowerup();
+            }
+            if (currentGame === 'snake') {
+                powerupGenerator = setTimeout(schedule, Math.random() * 10000 + 5000);
+            }
+        }
+        if (currentGame === 'snake') {
+            powerupGenerator = setTimeout(schedule, 5000);
+        }
+    }
+    
+    function stopAllGames() {
+        if (gameLoop) { clearTimeout(gameLoop); gameLoop = null; }
+        if (powerupGenerator) { clearTimeout(powerupGenerator); powerupGenerator = null; }
+        if (keydownHandler) {
+            window.removeEventListener('keydown', keydownHandler);
+            keydownHandler = null;
+        }
+        const canvas = document.getElementById('gameCanvas');
+        canvas.removeEventListener('click', onCanvasClick);
+    }
+    
+    function loadSnakeGame() {
+        stopAllGames();
+        currentGame = 'snake';
+        
+        document.getElementById('infoPanel').innerHTML = `
+            <h3>🐍 ЗМЕЙКА ${snakeAIMode ? '(ИИ УПРАВЛЯЕТ)' : '(ИГРОК УПРАВЛЯЕТ)'}</h3>
+            <div class="score-board" id="scoreDisplay">0</div>
+            <h3>📜 ПРОФИЛЬ (история очков)</h3>
+            <ul class="history-list" id="historyList"><li>— нет данных —</li></ul>
+            <h3>🎒 ИНВЕНТАРЬ (бусты)</h3>
+            <ul class="inventory-list" id="inventoryList"><li>— нет —</li></ul>
+            <div style="font-size:12px; margin-top:10px;">${snakeAIMode ? '🤖 ИИ играет сам' : '⚡ Управление: WASD / стрелки'}</div>
+        `;
+        
+        snakeGame.init();
+        snakeGame.draw();
+        snakeGame.updateUI();
+        
+        if (!snakeAIMode) {
+            keydownHandler = (e) => snakeGame.handleKey(e);
+            window.addEventListener('keydown', keydownHandler);
+        } else {
+            keydownHandler = null;
+        }
+        
+        startGameLoop();
+        startPowerupGeneratorSnake();
+    }
+    
+    function loadTicTacToe() {
+        stopAllGames();
+        currentGame = 'tictactoe';
+        
+        const canvas = document.getElementById('gameCanvas');
+        canvas.addEventListener('click', onCanvasClick);
+        
+        tttGame.init();
+        tttGame.draw();
+        tttGame.updateUI();
+    }
+    
+    // ======================== МЕНЮ ========================
+    const mainMenuDiv = document.getElementById('mainMenu');
+    const gameContainer = document.getElementById('gameContainer');
+    const restartBtn = document.getElementById('restartGameBtn');
+    const exitToMenuBtn = document.getElementById('exitToMenuBtn');
+    const settingsArea = document.getElementById('settingsArea');
+    
+    function showMenu() {
+        mainMenuDiv.style.display = 'block';
+        gameContainer.style.display = 'none';
+        stopAllGames();
+        currentGame = null;
+    }
+    
+    function hideMenuAndStart(gameType) {
+        initAudio();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        mainMenuDiv.style.display = 'none';
+        gameContainer.style.display = 'flex';
+        if (gameType === 'snake') loadSnakeGame();
+        else if (gameType === 'tictactoe') loadTicTacToe();
+    }
+    
+    document.querySelectorAll('.menu-item[data-game]').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const game = item.getAttribute('data-game');
+            createRipple(e, item);
+            hideMenuAndStart(game);
+        });
+    });
+    
+    document.querySelector('[data-action="settings"]').addEventListener('click', (e) => {
+        createRipple(e, e.currentTarget);
+        if (settingsArea.style.display === 'none') settingsArea.style.display = 'block';
+        else settingsArea.style.display = 'none';
+    });
+    
+    document.querySelector('[data-action="exit"]').addEventListener('click', (e) => {
+    createRipple(e, e.currentTarget);
+    if (confirm('Вернуться на главную страницу?')) {
+        window.location.href = 'index.html';
+    }
+});
+    
+    restartBtn.addEventListener('click', () => {
+        if (currentGame === 'snake') {
+            stopAllGames();
+            loadSnakeGame();
+        } else if (currentGame === 'tictactoe') {
+            tttGame.reset();
+        }
+    });
+    
+    exitToMenuBtn.addEventListener('click', () => {
+        showMenu();
+    });
+    
+    function createRipple(event, element) {
+        const rect = element.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = event.clientX - rect.left - size/2;
+        const y = event.clientY - rect.top - size/2;
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.style.position = 'absolute';
+        element.style.position = 'relative';
+        element.style.overflow = 'hidden';
+        element.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    }
+    
+    // Старт
+    showMenu();
+    settingsArea.style.display = 'none';
+    document.getElementById('soundToggle').classList.add('active');
+    snakeAIToggle.classList.remove('active');
+    snakeAIMode = false;
+    soundEnabled = true;
+</script>
+</body>
+</html>

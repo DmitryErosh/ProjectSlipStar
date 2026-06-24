@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Об авторе · Project Slip_Star</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили только для страницы about */
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .about-card {
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.9), rgba(10, 10, 20, 0.95));
+            border: 1px solid rgba(0, 255, 200, 0.08);
+            border-radius: 30px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(0, 255, 200, 0.03) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #00ffc8;
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+            text-align: left;
+            width: 100%;
+        }
+
+        .back-link:hover {
+            color: #ff00c8;
+            transform: translateX(-5px);
+        }
+
+        /* ===== АВАТАРКА С ФОТО ===== */
+        .avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00ffc8;
+            box-shadow: 0 0 30px rgba(0, 255, 200, 0.2);
+            margin-bottom: 25px;
+            transition: 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .avatar-img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(0, 255, 200, 0.4);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bio {
+            color: #8899aa;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            text-align: left;
+        }
+
+        .bio strong {
+            color: #ccddee;
+        }
+
+        .links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            justify-content: center;
+        }
+
+        .links a {
+            color: #00ffc8;
+            text-decoration: none;
+            padding: 8px 20px;
+            border: 1px solid rgba(0, 255, 200, 0.1);
+            border-radius: 30px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .links a:hover {
+            background: rgba(0, 255, 200, 0.05);
+            border-color: #00ffc8;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.05);
+        }
+
+        .glitch {
+            color: #445566;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-top: 30px;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-to-main {
+            text-align: center;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-to-main a {
+            color: #667788;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .back-to-main a:hover {
+            color: #00ffc8;
+        }
+
+        @media (max-width: 768px) {
+            .about-card { padding: 25px; }
+            h1 { font-size: 2rem; }
+            .avatar-img { width: 120px; height: 120px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="about-container">
+            <div class="about-card">
+                <a href="index.html" class="back-link">← Вернуться</a>
+
+                <!-- ===== АВАТАРКА С ФОТО ===== -->
+                <img src="avatar.jpg" alt="Slip_Star" class="avatar-img">
+
+                <h1>Slip_Star</h1>
+                <div class="bio">
+                    <p>Привет! Я <strong>Slip_Star</strong> — Дмитрий</p>
+                    <p>Разработчик, создающий проекты в основном при помощии <strong>ИИ</strong>.</p>
+                    <p style="margin-top: 15px;">Моя цель — объединять код, дизайн и креативность в интерактивные продукты. Здесь собраны мои лучшие работы — от веб-приложений до игровых интерфейсов.</p>
+                    <p style="margin-top: 15px;">Каждый проект — это эксперимент, в котором я пробую новые технологии и подходы.</p>
+                </div>
+                <div class="links">
+                    <a href="https://github.com/DmitryErosh" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    <a href="https://vk.com/dmitry_eroshkin" target="_blank" rel="noopener noreferrer">ВКонтакте</a>
+                    <a href="https://t.me/di_ero" target="_blank" rel="noopener noreferrer">Telegram</a>
+                </div>
+                <div class="glitch">// system.creator = "Slip_Star" // version 2.0</div>
+            </div>
+            <div class="back-to-main">
+                <a href="index.html">← На главную</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

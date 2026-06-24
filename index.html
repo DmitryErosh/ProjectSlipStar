@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Slip_Star</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- ===== ШАПКА ===== -->
+        <header class="header">
+            <div class="logo">
+                PROJECT Slip_Star
+                <span>// v2.0</span>
+            </div>
+            <nav class="nav">
+                <a href="#projects">Проекты</a>
+                <a href="#stats">Статистика</a>
+                <a href="about.html">Об авторе</a>
+                <a href="https://github.com/DmitryErosh" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </nav>
+        </header>
+
+        <!-- ===== ГЕРОЙ ===== -->
+        <section class="hero">
+            <h1>Добро пожаловать<br>в мою лабораторию</h1>
+            <p>Здесь собраны мои проекты — от экспериментов с кодом до готовых решений. Каждый проект — это шаг вперёд.</p>
+            <div class="glitch-text">system.ready = true // загрузка завершена</div>
+        </section>
+
+        <!-- ===== СТАТИСТИКА ===== -->
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="number" id="projectCount">0</div>
+                <div class="label">Всего проектов</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="doneCount">0</div>
+                <div class="label">Завершено</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="wipCount">0</div>
+                <div class="label">В работе</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="ideaCount">0</div>
+                <div class="label">Идеи</div>
+            </div>
+        </div>
+
+        <!-- ===== ПРОЕКТЫ ===== -->
+        <div id="projects">
+            <h2 class="section-title">
+                <span>⚡ Активные проекты</span>
+                <span class="accent">// interactive</span>
+            </h2>
+
+            <!-- ===== ФИЛЬТРЫ ===== -->
+            <div class="filters" id="filterContainer">
+                <button class="filter-btn active" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="done">✅ Готово</button>
+                <button class="filter-btn" data-filter="wip">⚡ В работе</button>
+                <button class="filter-btn" data-filter="idea">💡 Идеи</button>
+            </div>
+
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Карточки будут сгенерированы через JavaScript -->
+            </div>
+        </div>
+
+        <!-- ===== ПОДВАЛ ===== -->
+        <footer class="footer">
+            <p>
+                <span class="glow">✦</span> Project Slip_Star · 2026 
+                <span class="glow">✦</span> 
+                <span style="opacity:0.3;">//</span> 
+                cyberpunk · neon · code 
+                <span class="glow">✦</span>
+            </p>
+        </footer>
+    </div>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+            <button class="close-btn" id="modalCloseBtn" aria-label="Закрыть">✕</button>
+            <div class="modal-icon" id="modalIcon">🚀</div>
+            <h2 id="modalTitle">Название проекта</h2>
+            <div class="modal-desc" id="modalDesc">Описание проекта</div>
+            <div class="modal-details" id="modalDetails">
+                <div class="detail-row"><span class="label">Статус</span><span class="value" id="modalStatus">—</span></div>
+                <div class="detail-row"><span class="label">Теги</span><span class="value" id="modalTags">—</span></div>
+                <div class="detail-row"><span class="label">Дата</span><span class="value" id="modalDate">—</span></div>
+            </div>
+            <a href="#" class="modal-link disabled" id="modalLink" aria-disabled="true">В разработке →</a>
+        </div>
+    </div>
+
+    <script>
+        // ===== ДАННЫЕ ПРОЕКТОВ =====
+        const projects = [{
+            id: 1,
+            title: "Барабаны сепараторов",
+            icon: "🥁",
+            status: "done",
+            statusText: "Готово",
+            tags: ["HTML", "CSS", "JavaScript", "Google Sheets API"],
+            desc: "Веб-приложение для учёта и замены барабанов на сепараторах. Синхронизация с Google Таблицами, история замен, экспорт в Excel.",
+            fullDesc: "Полноценное приложение для промышленного учёта. Автоматическая синхронизация с облачным хранилищем, удобный интерфейс для замены комплектующих, ведение истории всех операций. Подходит для использования на производстве.",
+            date: "2026",
+            link: "https://dmitryerosh.github.io/Seporator/"
+        }, {
+            id: 2,
+            title: "ИИ-самоулучшение",
+            icon: "🧠",
+            status: "wip",
+            statusText: "В разработке",
+            tags: ["HTML", "CSS", "JavaScript", "AI"],
+            desc: "Концептуальный интерфейс имитации самообучения нейросети. Визуализация процесса оптимизации.",
+            fullDesc: "Демонстрационный проект, показывающий, как может выглядеть интерфейс для самообучающейся системы. Включает визуализацию метрик, лог событий и имитацию циклов улучшения.",
+            date: "2026",
+            link: "#"
+        }, {
+            id: 3,
+            title: "Cyberpunk Portfolio",
+            icon: "💻",
+            status: "idea",
+            statusText: "Идея",
+            tags: ["HTML", "CSS", "JavaScript", "Design"],
+            desc: "Сайт-портфолио в стиле киберпанк с неоновой эстетикой и интерактивными элементами.",
+            fullDesc: "Экспериментальный дизайн-проект. Сочетание тёмной темы, неоновых градиентов, анимированных элементов и игровой эстетики. Исследование возможностей CSS и анимаций.",
+            date: "2026",
+            link: "#"
+        }, {
+            id: 4,
+            title: "Чат с нейросетью",
+            icon: "💬",
+            status: "done",
+            statusText: "Готово",
+            tags: ["HTML", "CSS", "JavaScript", "API"],
+            desc: "Диалоговый интерфейс для общения с ИИ-моделью. Имитация работы языковой модели с контекстом.",
+            fullDesc: "Интерактивный чат, который имитирует работу языковой модели. Учитывает контекст диалога, имеет стильный интерфейс и визуализацию процесса 'мышления' нейросети.",
+            date: "2026",
+            link: "#"
+        }, {
+            id: 5,
+            title: "Game Dashboard",
+            icon: "🎮",
+            status: "done",
+            statusText: "Готово",
+            tags: ["HTML", "CSS", "JavaScript", "Gaming"],
+            desc: "Игровая панель управления с анимациями и визуальными эффектами. Статистика, достижения, прогресс.",
+            fullDesc: "Проект по созданию красивого игрового дашборда. Включает анимированные графики, виджеты достижений, систему уровней и визуальные эффекты. Планируется интеграция с игровыми API. На базе ИИ.",
+            date: "2026",
+            link: "game.html"
+        }, {
+            id: 6,
+            title: "Neon Tetris",
+            icon: "🟦",
+            status: "wip",
+            statusText: "В разработке",
+            tags: ["HTML", "CSS", "JavaScript", "Game"],
+            desc: "Классический тетрис в неоновом стиле. Управление с клавиатуры, подсчёт очков, уровни сложности.",
+            fullDesc: "Переосмысление классической игры в стиле киберпанк. Неоновая графика, пульсирующие блоки, динамическая подсветка. Игра включает систему очков, уровни сложности и сохранение рекордов.",
+            date: "2026",
+            link: "#"
+        }];
+
+        // ===== ПОЛУЧАЕМ ВСЕ ТЕГИ =====
+        const allTags = [...new Set(projects.flatMap(p => p.tags))];
+
+        // ===== СОСТОЯНИЕ СТАТИСТИКИ =====
+        function updateStats() {
+            const total = projects.length;
+            const done = projects.filter(p => p.status === 'done').length;
+            const wip = projects.filter(p => p.status === 'wip').length;
+            const idea = projects.filter(p => p.status === 'idea').length;
+
+            document.getElementById('projectCount').textContent = total;
+            document.getElementById('doneCount').textContent = done;
+            document.getElementById('wipCount').textContent = wip;
+            document.getElementById('ideaCount').textContent = idea;
+        }
+
+        // ===== ФИЛЬТРАЦИЯ =====
+        let currentFilter = 'all';
+
+        function filterProjects(filter) {
+            currentFilter = filter;
+            
+            // Обновляем активную кнопку
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+
+            // Показываем/скрываем карточки с анимацией
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach((card, index) => {
+                const projectId = parseInt(card.dataset.id);
+                const project = projects.find(p => p.id === projectId);
+                
+                if (!project) return;
+
+                const matches = filter === 'all' || project.status === filter;
+                
+                if (matches) {
+                    card.style.display = 'block';
+                    // Добавляем задержку для последовательной анимации
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 50);
+                } else {
+                    card.classList.remove('visible');
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // ===== РЕНДЕР КАРТОЧЕК =====
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = '';
+
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.dataset.id = project.id;
+
+                const statusClass = project.status === 'done' ? 'done' : 
+                                   project.status === 'wip' ? 'wip' : 'idea';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="project-icon">${project.icon}</span>
+                        <span class="project-status ${statusClass}">${project.statusText}</span>
+                    </div>
+                    <h3>${project.title}</h3>
+                    <div class="project-tags">
+                        ${project.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
+                    <p>${project.desc}</p>
+                    <div class="card-footer">
+                        <span class="project-date">📅 ${project.date}</span>
+                        <span style="color:#445566; font-size:0.7rem;">click → детали</span>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => openModal(project.id));
+
+                grid.appendChild(card);
+            });
+
+            // Применяем фильтр после рендера
+            filterProjects('all');
+        }
+
+        // ===== АНИМАЦИЯ ПРИ ПРОКРУТКЕ (Intersection Observer) =====
+        function setupIntersectionObserver() {
+            const cards = document.querySelectorAll('.project-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        // ===== МОДАЛЬНОЕ ОКНО =====
+        function openModal(id) {
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
+
+            document.getElementById('modalIcon').textContent = project.icon;
+            document.getElementById('modalTitle').textContent = project.title;
+            document.getElementById('modalDesc').textContent = project.fullDesc || project.desc;
+            document.getElementById('modalStatus').textContent = project.statusText;
+            document.getElementById('modalTags').textContent = project.tags.join(' · ');
+            document.getElementById('modalDate').textContent = project.date;
+            document.getElementById('modalLink').href = project.link;
+            document.getElementById('modalLink').textContent = project.link !== '#' ? 'Посмотреть проект →' : 'В разработке →';
+            document.getElementById('modalLink').classList.toggle('disabled', project.link === '#');
+
+            document.getElementById('modalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ===== СОБЫТИЯ =====
+        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modalOverlay')) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Фильтры
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterProjects(btn.dataset.filter);
+                // Запускаем observer заново для новых карточек
+                setTimeout(setupIntersectionObserver, 100);
+            });
+        });
+
+        // ===== ЗАПУСК =====
+        updateStats();
+        renderProjects();
+        setTimeout(setupIntersectionObserver, 200);
+
+        // Консольное приветствие
+        console.log('%c✦ Project Slip_Star v2.0 ✦', 'font-size:20px; font-weight:bold; color:#00ffc8;');
+        console.log('%cСайт-портфолио с фильтрацией и анимацией появления.', 'color:#8899aa;');
+        console.log('%cДоступные теги:', 'color:#667788;', allTags.join(', '));
+    </script>
+
+</body>
+</html>
