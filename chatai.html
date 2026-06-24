@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с нейросетью · Выбор вопросов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a1e2c 0%, #2a2f3f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .chat-container {
+            max-width: 820px;
+            width: 100%;
+            background: rgba(30, 34, 48, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 42px;
+            box-shadow: 0 25px 45px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            padding: 24px 24px 28px;
+            transition: all 0.2s ease;
+        }
+
+        /* Шапка */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 6px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        .header-info h2 {
+            color: #f0f2fa;
+            font-weight: 600;
+            font-size: 1.3rem;
+            letter-spacing: -0.3px;
+        }
+
+        .header-info p {
+            color: #a5abc0;
+            font-size: 0.85rem;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #2ecc71aa;
+            margin-right: 4px;
+        }
+
+        /* Поле сообщений */
+        .messages-area {
+            background: rgba(20, 23, 35, 0.5);
+            border-radius: 28px;
+            padding: 20px 16px 12px;
+            margin: 22px 0 18px;
+            max-height: 400px;
+            min-height: 300px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .messages-area::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: #4a4f6b;
+            border-radius: 12px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 18px;
+            animation: fadeSlide 0.25s ease-out;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 78%;
+            padding: 14px 18px;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-break: break-word;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .message.user .bubble {
+            background: linear-gradient(135deg, #6c5ce7, #7d6ff0);
+            color: white;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 8px 16px -6px #6c5ce766;
+        }
+
+        .message.bot .bubble {
+            background: rgba(44, 49, 68, 0.8);
+            backdrop-filter: blur(4px);
+            color: #eaeef7;
+            border-bottom-left-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .bubble-time {
+            font-size: 0.65rem;
+            opacity: 0.5;
+            margin-top: 8px;
+            text-align: right;
+            letter-spacing: 0.3px;
+        }
+
+        .message.user .bubble-time {
+            color: #d5d0ff;
+        }
+
+        .message.bot .bubble-time {
+            color: #a0a8c0;
+        }
+
+        /* Блок с вариантами вопросов */
+        .questions-panel {
+            background: rgba(16, 19, 30, 0.6);
+            border-radius: 28px;
+            padding: 18px 16px 12px;
+            margin-top: 8px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .questions-label {
+            color: #9aa2bb;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .questions-label span {
+            background: #2f354a;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: #bcc3dd;
+        }
+
+        .questions-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .question-btn {
+            background: rgba(60, 66, 92, 0.4);
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #d6def0;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 450;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            flex: 1 0 auto;
+            max-width: 100%;
+            text-align: center;
+            letter-spacing: 0.2px;
+            line-height: 1.3;
+        }
+
+        .question-btn:hover {
+            background: #6c5ce7;
+            border-color: #8b7cf7;
+            color: white;
+            transform: scale(1.01);
+            box-shadow: 0 8px 18px -6px #6c5ceb88;
+        }
+
+        .question-btn:active {
+            transform: scale(0.97);
+        }
+
+        .question-btn:focus-visible {
+            outline: 2px solid #a29bfe;
+            outline-offset: 2px;
+        }
+
+        /* Доп. действия / снизу */
+        .chat-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 18px;
+            gap: 12px;
+        }
+
+        .clear-btn {
+            background: rgba(255, 70, 70, 0.08);
+            border: 1px solid rgba(255, 70, 70, 0.15);
+            color: #f28b8b;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(2px);
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 70, 70, 0.18);
+            border-color: #ff6b6b55;
+            color: #ffa5a5;
+        }
+
+        .counter-badge {
+            color: #7c84a3;
+            font-size: 0.8rem;
+            background: #262b3d;
+            padding: 4px 14px;
+            border-radius: 40px;
+            border: 1px solid #2f354a;
+        }
+
+        /* Анимация */
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Адаптив */
+        @media (max-width: 550px) {
+            .chat-container {
+                padding: 16px;
+            }
+            .bubble {
+                max-width: 88%;
+                font-size: 0.9rem;
+            }
+            .question-btn {
+                font-size: 0.8rem;
+                padding: 8px 14px;
+                flex: 1 1 100%;
+            }
+            .questions-grid {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container" role="main">
+    <!-- Шапка -->
+    <div class="chat-header">
+        <div class="avatar">🧠</div>
+        <div class="header-info">
+            <h2>Нейро-ассистент</h2>
+            <p><span class="status-dot"></span> онлайн · выбирай вопрос</p>
+        </div>
+    </div>
+
+    <!-- Область сообщений -->
+    <div class="messages-area" id="messageArea" aria-live="polite">
+        <!-- Приветственное сообщение (бот) -->
+        <div class="message bot">
+            <div class="bubble">
+                👋 Привет! Я нейросеть. Выбери один из вопросов ниже, и я отвечу.
+                <div class="bubble-time">только что</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок с вариантами вопросов -->
+    <div class="questions-panel">
+        <div class="questions-label">
+            📌 Вопросы для нейросети
+            <span>нажми</span>
+        </div>
+        <div class="questions-grid" id="questionsGrid">
+            <!-- Кнопки генерируются из массива, но для надёжности продублируем в JS -->
+        </div>
+    </div>
+
+    <!-- Футер с кнопкой очистки -->
+    <div class="chat-footer">
+        <span class="counter-badge" id="messageCounter">💬 1</span>
+        <button class="clear-btn" id="clearChatBtn" aria-label="Очистить чат">✕ Очистить диалог</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---- БАЗА ВОПРОСОВ (для выбора) ----
+        const QUESTION_BANK = [
+            "Что такое квантовое запутывание?",
+            "Объясни теорию струн простыми словами",
+            "Как работают нейросети?",
+            "Что такое тёмная материя?",
+            "Какие есть гипотезы о мультивселенной?",
+            "В чём разница между ИИ и машинным обучением?",
+            "Как появилась Вселенная?",
+            "Что такое сингулярность?"
+        ];
+
+        // Элементы DOM
+        const messagesArea = document.getElementById('messageArea');
+        const questionsGrid = document.getElementById('questionsGrid');
+        const clearBtn = document.getElementById('clearChatBtn');
+        const counterSpan = document.getElementById('messageCounter');
+
+        // Функция для получения текущего времени (ЧЧ:ММ)
+        function getTimeStamp() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }
+
+        // Добавление сообщения в чат
+        function addMessage(text, sender = 'bot') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+
+            // Текст сообщения (поддержка простых переносов)
+            const textNode = document.createElement('span');
+            textNode.textContent = text;
+            bubble.appendChild(textNode);
+
+            // Время
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'bubble-time';
+            timeDiv.textContent = getTimeStamp();
+            bubble.appendChild(timeDiv);
+
+            messageDiv.appendChild(bubble);
+            messagesArea.appendChild(messageDiv);
+
+            // Прокрутка вниз
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+
+            // Обновляем счётчик сообщений
+            updateCounter();
+        }
+
+        // Генерация ответа нейросети (имитация)
+        function generateBotAnswer(questionText) {
+            // Небольшая "нейросетевая" вариативность
+            const answers = [
+                `Отличный вопрос! Вот что я знаю: «${questionText}» — это сложная тема, но если кратко, то это область активных исследований. Многие учёные считают, что ответ на этот вопрос изменит наше понимание мира.`,
+                `Интересно! По поводу «${questionText}»: современная наука предлагает несколько теорий. Одна из них гласит, что это фундаментальное свойство нашей реальности.`,
+                `Я обработала твой запрос: «${questionText}». В моей базе данных есть информация, что это явление связано с квантовой механикой и теорией относительности. Нужно больше деталей?`,
+                `Хм, «${questionText}»… Это один из популярных вопросов. Согласно последним данным, ответ может быть неоднозначным, но я бы порекомендовала изучить работы по этой теме.`,
+                `По теме «${questionText}»: существует гипотеза, что это может быть объяснено через многомерные пространства. Но, честно говоря, это всё ещё предмет споров.`
+            ];
+            // Выбираем случайный ответ
+            return answers[Math.floor(Math.random() * answers.length)];
+        }
+
+        // Обработчик клика по вопросу (выбор вопроса)
+        function handleQuestionClick(event) {
+            const btn = event.currentTarget;
+            const question = btn.getAttribute('data-question');
+            if (!question) return;
+
+            // 1) Добавляем вопрос пользователя
+            addMessage(question, 'user');
+
+            // 2) Имитация задержки "думает" и ответ бота
+            const botReply = generateBotAnswer(question);
+            setTimeout(() => {
+                addMessage(botReply, 'bot');
+            }, 380); // небольшая задержка, как у настоящей нейросети
+        }
+
+        // Создание кнопок вопросов
+        function renderQuestions() {
+            questionsGrid.innerHTML = ''; // очищаем
+            QUESTION_BANK.forEach(q => {
+                const btn = document.createElement('button');
+                btn.className = 'question-btn';
+                btn.textContent = q;
+                btn.setAttribute('data-question', q);
+                btn.addEventListener('click', handleQuestionClick);
+                questionsGrid.appendChild(btn);
+            });
+        }
+
+        // Обновление счётчика сообщений
+        function updateCounter() {
+            const messageCount = messagesArea.querySelectorAll('.message').length;
+            counterSpan.textContent = `💬 ${messageCount}`;
+        }
+
+        // Очистка чата (кроме приветствия)
+        function clearChat() {
+            // Удаляем все сообщения, кроме первого (приветствие бота)
+            const messages = messagesArea.querySelectorAll('.message');
+            if (messages.length <= 1) return; // уже только приветствие
+
+            // Оставляем только первый элемент (индекс 0)
+            for (let i = messages.length - 1; i > 0; i--) {
+                messages[i].remove();
+            }
+            // Обновляем счётчик
+            updateCounter();
+            // Дополнительно: можно добавить системное сообщение (опционально)
+            // но не будем перегружать, просто обновим счётчик
+        }
+
+        // ---- ИНИЦИАЛИЗАЦИЯ ----
+        function init() {
+            renderQuestions();
+
+            // Очистка чата по кнопке
+            clearBtn.addEventListener('click', clearChat);
+
+            // Счётчик при старте (уже есть 1 сообщение)
+            updateCounter();
+
+            // (опционально) можно добавить обработку нажатия Enter, но по условию только кнопки
+        }
+
+        // Запуск
+        init();
+    })();
+</script>
+
+</body>
+</html>
