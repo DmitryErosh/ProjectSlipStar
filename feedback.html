@@ -6,6 +6,7 @@
     <title>Обратная связь · Slip_Star</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
         .feedback-container {
             max-width: 700px;
             margin: 0 auto;
@@ -23,6 +24,7 @@
             padding: 40px;
             position: relative;
             overflow: hidden;
+            transition: 0.3s;
         }
 
         .feedback-card::before {
@@ -34,6 +36,7 @@
             height: 200%;
             background: radial-gradient(circle at center, rgba(0, 255, 200, 0.03) 0%, transparent 70%);
             animation: rotate 20s linear infinite;
+            pointer-events: none;
         }
 
         @keyframes rotate {
@@ -75,9 +78,141 @@
             z-index: 1;
         }
 
-        .feedback-form {
+        /* ===== БЛОК ДЛЯ НЕАВТОРИЗОВАННЫХ ===== */
+        .auth-required {
+            text-align: center;
+            padding: 40px 20px;
             position: relative;
             z-index: 1;
+        }
+
+        .auth-required .icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .auth-required h3 {
+            color: #ccddee;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .auth-required p {
+            color: #667788;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .auth-required .auth-link {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #00ffc8, #00ccaa);
+            color: #0a0a0f;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .auth-required .auth-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 200, 0.3);
+        }
+
+        /* ===== БЛОК ДЛЯ АВТОРИЗОВАННЫХ ===== */
+        .feedback-form-wrapper {
+            display: none;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-form-wrapper.active {
+            display: block;
+        }
+
+        .user-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 255, 200, 0.04);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info-bar .user-data {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info-bar .user-data .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #0a0a0f;
+            font-weight: 700;
+        }
+
+        .user-info-bar .user-data .user-name {
+            color: #ccddee;
+            font-weight: 600;
+        }
+
+        .user-info-bar .user-data .user-role {
+            font-size: 0.6rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: rgba(0, 255, 200, 0.08);
+            color: #00ffc8;
+        }
+
+        .user-info-bar .user-data .user-role.admin {
+            background: rgba(255, 200, 0, 0.12);
+            color: #ffcc00;
+            border: 1px solid rgba(255, 200, 0, 0.15);
+        }
+
+        .user-info-bar .logout-link {
+            color: #ff4466;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: 0.3s;
+            font-family: 'Courier New', monospace;
+            padding: 4px 12px;
+            border: 1px solid rgba(255, 68, 102, 0.15);
+            border-radius: 20px;
+        }
+
+        .user-info-bar .logout-link:hover {
+            background: rgba(255, 68, 102, 0.08);
+            border-color: #ff4466;
+        }
+
+        /* ===== ФОРМА ===== */
+        .feedback-form {
+            position: relative;
         }
 
         .form-group {
@@ -136,10 +271,20 @@
             color: #ccddee;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .form-group .char-counter {
+            text-align: right;
+            color: #445566;
+            font-size: 0.7rem;
+            margin-top: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-group .char-counter.warning {
+            color: #ffcc00;
+        }
+
+        .form-group .char-counter.danger {
+            color: #ff4466;
         }
 
         .rating-group {
@@ -181,9 +326,10 @@
             transition: 0.3s;
             margin-top: 10px;
             letter-spacing: 2px;
+            position: relative;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             transform: scale(1.02);
             box-shadow: 0 0 40px rgba(0, 255, 200, 0.2);
         }
@@ -194,16 +340,42 @@
             transform: none;
         }
 
+        .submit-btn .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #0a0a0f;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .submit-btn.loading .loader {
+            display: block;
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== УСПЕХ ===== */
         .success-message {
             display: none;
             text-align: center;
             padding: 40px 20px;
             position: relative;
             z-index: 1;
+            animation: fadeInUp 0.5s ease;
         }
 
         .success-message .success-icon {
             font-size: 4rem;
+            display: block;
             margin-bottom: 20px;
         }
 
@@ -218,11 +390,49 @@
             font-size: 1rem;
         }
 
+        .success-message .new-feedback-btn {
+            margin-top: 20px;
+            padding: 10px 24px;
+            background: rgba(0, 255, 200, 0.08);
+            border: 1px solid rgba(0, 255, 200, 0.1);
+            border-radius: 30px;
+            color: #00ffc8;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .success-message .new-feedback-btn:hover {
+            background: rgba(0, 255, 200, 0.15);
+            border-color: #00ffc8;
+        }
+
+        /* ===== ОШИБКА ===== */
+        .error-message {
+            display: none;
+            background: rgba(255, 0, 100, 0.08);
+            border: 1px solid rgba(255, 0, 100, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #ff4466;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
             .feedback-card { padding: 25px; }
             .feedback-title { font-size: 2rem; }
             .form-row { grid-template-columns: 1fr; }
             .rating-group label { font-size: 1.6rem; }
+            .user-info-bar { flex-direction: column; align-items: stretch; text-align: center; }
+            .user-info-bar .user-data { justify-content: center; }
         }
     </style>
 </head>
@@ -230,168 +440,282 @@
     <div class="container">
         <div class="feedback-container">
             <div class="feedback-card">
+                <!-- ===== НАЗАД ===== -->
                 <a href="index.html" class="back-link">← Вернуться</a>
 
                 <h1 class="feedback-title">📡 Обратная связь</h1>
                 <p class="feedback-subtitle">Оставьте сообщение — я отвечу вам в ближайшее время</p>
 
-                <form class="feedback-form" id="feedbackForm">
-                    <div class="form-row">
+                <!-- ============================================================ -->
+                <!-- БЛОК ДЛЯ НЕАВТОРИЗОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ                      -->
+                <!-- ============================================================ -->
+                <div class="auth-required" id="authRequiredBlock">
+                    <span class="icon">🔒</span>
+                    <h3>Требуется авторизация</h3>
+                    <p>Чтобы отправить сообщение, пожалуйста, <strong>войдите</strong> в систему или <strong>зарегистрируйтесь</strong>.</p>
+                    <a href="auth.html" class="auth-link">🔐 Войти / Зарегистрироваться</a>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- БЛОК ДЛЯ АВТОРИЗОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ                        -->
+                <!-- ============================================================ -->
+                <div class="feedback-form-wrapper" id="feedbackFormWrapper">
+                    <!-- Информация о пользователе -->
+                    <div class="user-info-bar">
+                        <div class="user-data">
+                            <div class="avatar" id="userAvatar">S</div>
+                            <span class="user-name" id="userName">Slip_Star</span>
+                            <span class="user-role" id="userRole">ADMIN</span>
+                        </div>
+                        <a href="logout.php" class="logout-link">🚪 Выйти</a>
+                    </div>
+
+                    <!-- Ошибка -->
+                    <div class="error-message" id="errorMessage"></div>
+
+                    <!-- Форма -->
+                    <form class="feedback-form" id="feedbackForm" novalidate>
                         <div class="form-group">
-                            <label for="name">Имя</label>
-                            <input type="text" id="name" placeholder="Введите ваше имя" required>
+                            <label for="subject">Тема</label>
+                            <select id="subject">
+                                <option value="question">❓ Вопрос по проекту</option>
+                                <option value="suggestion">💡 Предложение</option>
+                                <option value="bug">🐛 Сообщить об ошибке</option>
+                                <option value="cooperation">🤝 Сотрудничество</option>
+                                <option value="other">📌 Другое</option>
+                            </select>
                         </div>
+
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" placeholder="example@mail.ru" required>
+                            <label for="message">Сообщение <span style="color:#445566; font-size:0.7rem;">(минимум 10 символов)</span></label>
+                            <textarea id="message" placeholder="Опишите ваш вопрос или предложение..." required maxlength="5000"></textarea>
+                            <div class="char-counter" id="charCounter">0 / 5000</div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="subject">Тема</label>
-                        <select id="subject">
-                            <option value="question">❓ Вопрос по проекту</option>
-                            <option value="suggestion">💡 Предложение</option>
-                            <option value="bug">🐛 Сообщить об ошибке</option>
-                            <option value="cooperation">🤝 Сотрудничество</option>
-                            <option value="other">📌 Другое</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Сообщение</label>
-                        <textarea id="message" placeholder="Опишите ваш вопрос или предложение..." required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Оцените сайт</label>
-                        <div class="rating-group">
-                            <input type="radio" name="rating" id="star5" value="5">
-                            <label for="star5">⭐</label>
-                            <input type="radio" name="rating" id="star4" value="4">
-                            <label for="star4">⭐</label>
-                            <input type="radio" name="rating" id="star3" value="3">
-                            <label for="star3">⭐</label>
-                            <input type="radio" name="rating" id="star2" value="2">
-                            <label for="star2">⭐</label>
-                            <input type="radio" name="rating" id="star1" value="1">
-                            <label for="star1">⭐</label>
+                        <div class="form-group">
+                            <label>Оцените сайт</label>
+                            <div class="rating-group">
+                                <input type="radio" name="rating" id="star5" value="5">
+                                <label for="star5">⭐</label>
+                                <input type="radio" name="rating" id="star4" value="4">
+                                <label for="star4">⭐</label>
+                                <input type="radio" name="rating" id="star3" value="3">
+                                <label for="star3">⭐</label>
+                                <input type="radio" name="rating" id="star2" value="2">
+                                <label for="star2">⭐</label>
+                                <input type="radio" name="rating" id="star1" value="1">
+                                <label for="star1">⭐</label>
+                            </div>
                         </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <span class="btn-text">🚀 Отправить</span>
+                            <span class="loader"></span>
+                        </button>
+                    </form>
+
+                    <!-- Сообщение об успехе -->
+                    <div class="success-message" id="successMessage">
+                        <span class="success-icon">✅</span>
+                        <h3>Сообщение отправлено!</h3>
+                        <p>Спасибо за обратную связь. Я отвечу вам в ближайшее время.</p>
+                        <button class="new-feedback-btn" id="newFeedbackBtn">✏️ Написать ещё</button>
                     </div>
-
-                    <button type="submit" class="submit-btn" id="submitBtn">🚀 Отправить</button>
-                </form>
-
-                <div class="success-message" id="successMessage">
-                    <div class="success-icon">✅</div>
-                    <h3>Сообщение отправлено!</h3>
-                    <p>Спасибо за обратную связь. Я отвечу вам в ближайшее время.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============================================================
-        // НАСТРОЙКИ TELEGRAM БОТА (ВАШ ТОКЕН УЖЕ ВСТАВЛЕН)
-        // ============================================================
-        const TELEGRAM_BOT_TOKEN = '8875392399:AAHQRpXA9wLVher9g0TlEUxpWYeEJ7YEXqU';
-        const TELEGRAM_CHAT_ID = '1070461736';  // ⚠️ ВСТАВЬТЕ СВОЙ CHAT ID
+        // ================================================================
+        // 1. ПРОВЕРКА АВТОРИЗАЦИИ
+        // ================================================================
+        async function checkAuth() {
+            try {
+                const response = await fetch('check-auth.php', {
+                    cache: 'no-cache',
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
 
-        // ============================================================
-        // ОТПРАВКА В TELEGRAM
-        // ============================================================
-        async function sendToTelegram(data) {
-            const text = `
-📩 НОВОЕ СООБЩЕНИЕ
-━━━━━━━━━━━━━━━━━━━
-👤 Имя: ${data.name}
-📧 Email: ${data.email}
-📌 Тема: ${data.subject}
-⭐ Рейтинг: ${data.rating}
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
 
-💬 Сообщение:
-${data.message}
-━━━━━━━━━━━━━━━━━━━
-📅 ${new Date().toLocaleString()}
-`;
+                const data = await response.json();
 
-            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                if (data.loggedIn && data.user) {
+                    // Показываем форму для авторизованных
+                    document.getElementById('authRequiredBlock').style.display = 'none';
+                    const wrapper = document.getElementById('feedbackFormWrapper');
+                    wrapper.classList.add('active');
+                    wrapper.style.display = 'block';
 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: text,
-                    parse_mode: 'HTML'
-                })
-            });
+                    // Заполняем данные пользователя
+                    const username = data.user.username || 'Пользователь';
+                    document.getElementById('userName').textContent = username;
+                    document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.description || 'Ошибка отправки');
+                    const role = data.user.role || 'user';
+                    const roleEl = document.getElementById('userRole');
+                    roleEl.textContent = role.toUpperCase();
+                    roleEl.className = 'user-role' + (role === 'admin' ? ' admin' : '');
+
+                    return true;
+                } else {
+                    // Показываем блок для неавторизованных
+                    document.getElementById('authRequiredBlock').style.display = 'block';
+                    document.getElementById('feedbackFormWrapper').style.display = 'none';
+                    return false;
+                }
+
+            } catch (error) {
+                console.error('Ошибка проверки авторизации:', error);
+                document.getElementById('authRequiredBlock').style.display = 'block';
+                document.getElementById('feedbackFormWrapper').style.display = 'none';
+                return false;
             }
-
-            return response.json();
         }
 
-        // ============================================================
-        // ОБРАБОТЧИК ФОРМЫ
-        // ============================================================
+        // ================================================================
+        // 2. ОТПРАВКА ФОРМЫ
+        // ================================================================
         document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.textContent = '⏳ Отправка...';
+            const errorEl = document.getElementById('errorMessage');
+            const messageInput = document.getElementById('message');
+
+            // Скрываем старую ошибку
+            errorEl.classList.remove('show');
+            errorEl.textContent = '';
+
+            // Валидация
+            const message = messageInput.value.trim();
+
+            if (!message) {
+                showError('Пожалуйста, напишите сообщение.');
+                messageInput.focus();
+                return;
+            }
+
+            if (message.length < 10) {
+                showError('Сообщение должно содержать минимум 10 символов.');
+                messageInput.focus();
+                return;
+            }
+
+            // Блокируем кнопку
             submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
 
             const formData = {
-                name: document.getElementById('name').value.trim(),
-                email: document.getElementById('email').value.trim(),
                 subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value.trim(),
-                rating: document.querySelector('input[name="rating"]:checked')?.value || 'Не указан'
+                message: message,
+                rating: parseInt(document.querySelector('input[name="rating"]:checked')?.value) || 0
             };
 
-            if (!formData.name || !formData.email || !formData.message) {
-                alert('⚠️ Пожалуйста, заполните все обязательные поля.');
-                submitBtn.textContent = '🚀 Отправить';
-                submitBtn.disabled = false;
-                return;
-            }
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(formData.email)) {
-                alert('⚠️ Введите корректный email адрес.');
-                submitBtn.textContent = '🚀 Отправить';
-                submitBtn.disabled = false;
-                return;
-            }
-
             try {
-                if (TELEGRAM_CHAT_ID === 'ВАШ_CHAT_ID') {
-                    console.log('📨 [DEMO] Форма отправлена:', formData);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                const response = await fetch('save-feedback.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Успех
+                    document.getElementById('feedbackForm').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // Звук (опционально)
+                    try {
+                        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.frequency.value = 880;
+                        gain.gain.value = 0.1;
+                        osc.start();
+                        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+                        osc.stop(audioCtx.currentTime + 0.2);
+                    } catch(e) {}
+
                 } else {
-                    await sendToTelegram(formData);
+                    showError(result.message || 'Ошибка отправки сообщения.');
                 }
-
-                document.getElementById('feedbackForm').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'block';
-
-                if (window.playClickSound) window.playClickSound();
 
             } catch (error) {
                 console.error('Ошибка:', error);
-                alert(`❌ Ошибка отправки: ${error.message}`);
-                submitBtn.textContent = '🚀 Отправить';
+                showError('Ошибка соединения с сервером. Попробуйте позже.');
+            } finally {
                 submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
             }
         });
 
-        console.log('%c📡 Обратная связь (Telegram)', 'font-size:18px; font-weight:bold; color:#00ffc8;');
-        console.log('%cТокен бота установлен. Вставьте свой CHAT_ID в код.', 'color:#667788;');
+        // ================================================================
+        // 3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ================================================================
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = '❌ ' + message;
+            errorEl.classList.add('show');
+            setTimeout(() => {
+                errorEl.classList.remove('show');
+            }, 5000);
+        }
+
+        // ================================================================
+        // 4. СЧЁТЧИК СИМВОЛОВ
+        // ================================================================
+        const messageInput = document.getElementById('message');
+        const charCounter = document.getElementById('charCounter');
+
+        messageInput.addEventListener('input', function() {
+            const len = this.value.length;
+            const max = 5000;
+            charCounter.textContent = `${len} / ${max}`;
+            charCounter.className = 'char-counter' + 
+                (len > max * 0.8 ? ' warning' : '') + 
+                (len > max * 0.95 ? ' danger' : '');
+        });
+
+        // ================================================================
+        // 5. НОВОЕ СООБЩЕНИЕ
+        // ================================================================
+        document.getElementById('newFeedbackBtn').addEventListener('click', function() {
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('feedbackForm').style.display = 'block';
+            document.getElementById('message').value = '';
+            document.getElementById('message').focus();
+            // Сбрасываем рейтинг
+            document.querySelectorAll('input[name="rating"]').forEach(r => r.checked = false);
+        });
+
+        // ================================================================
+        // 6. ЗАПУСК
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        // Обновляем статус при возврате на страницу (из кэша)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                checkAuth();
+            }
+        });
+
+        console.log('%c📡 Обратная связь (только для авторизованных) v2.0', 'font-size:18px; font-weight:bold; color:#00ffc8;');
+        console.log('%c🔒 Проверка авторизации при загрузке страницы', 'color:#667788;');
     </script>
+
+    <!-- Подключаем статус в навигации -->
+    <script src="nav-status.js"></script>
 </body>
 </html>
