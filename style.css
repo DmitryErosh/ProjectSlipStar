@@ -210,67 +210,6 @@ textarea:focus-visible {
     width: 100%;
 }
 
-/* ===== СТАТУС ПОЛЬЗОВАТЕЛЯ В НАВИГАЦИИ ===== */
-.nav-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 12px;
-    background: rgba(0, 255, 200, 0.04);
-    border: 1px solid rgba(0, 255, 200, 0.06);
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-family: 'Courier New', monospace;
-    margin-left: 8px;
-}
-
-.nav-status .status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #00ffc8;
-    box-shadow: 0 0 10px rgba(0, 255, 200, 0.3);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
-.nav-status .username {
-    color: #ccddee;
-    font-weight: 600;
-}
-
-.nav-status .role-badge {
-    font-size: 0.6rem;
-    padding: 2px 8px;
-    border-radius: 12px;
-    background: rgba(0, 255, 200, 0.08);
-    color: #00ffc8;
-}
-
-.nav-status .role-badge.admin {
-    background: rgba(255, 200, 0, 0.12);
-    color: #ffcc00;
-    border: 1px solid rgba(255, 200, 0, 0.15);
-}
-
-.nav-status .logout-link {
-    color: #ff4466;
-    text-decoration: none;
-    font-size: 0.7rem;
-    transition: 0.3s;
-    margin-left: 4px;
-}
-
-.nav-status .logout-link:hover {
-    color: #ff6688;
-    text-shadow: 0 0 20px rgba(255, 0, 100, 0.2);
-}
-
 /* ===== ГЕРОЙ ===== */
 .hero {
     text-align: center;
