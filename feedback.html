@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обратная связь · Slip_Star</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .feedback-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .feedback-card {
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.9), rgba(10, 10, 20, 0.95));
+            border: 1px solid rgba(0, 255, 200, 0.08);
+            border-radius: 30px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(0, 255, 200, 0.03) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #00ffc8;
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link:hover {
+            color: #ff00c8;
+            transform: translateX(-5px);
+        }
+
+        .feedback-title {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feedback-subtitle {
+            color: #667788;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feedback-form {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #8899aa;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 200, 0.08);
+            border-radius: 12px;
+            color: #ccddee;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #00ffc8;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.05);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #445566;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group select {
+            appearance: none;
+            cursor: pointer;
+            color: #8899aa;
+        }
+
+        .form-group select option {
+            background: #0a0a0f;
+            color: #ccddee;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .rating-group {
+            display: flex;
+            gap: 10px;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .rating-group input {
+            display: none;
+        }
+
+        .rating-group label {
+            font-size: 2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #445566;
+        }
+
+        .rating-group label:hover,
+        .rating-group label:hover ~ label,
+        .rating-group input:checked ~ label {
+            color: #ffcc00;
+            text-shadow: 0 0 20px rgba(255, 200, 0, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00ffc8, #00ccaa);
+            color: #0a0a0f;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(0, 255, 200, 0.2);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .success-message .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .success-message h3 {
+            color: #00ffc8;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .success-message p {
+            color: #667788;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .feedback-card { padding: 25px; }
+            .feedback-title { font-size: 2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .rating-group label { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="feedback-container">
+            <div class="feedback-card">
+                <a href="index.html" class="back-link">← Вернуться</a>
+
+                <h1 class="feedback-title">📡 Обратная связь</h1>
+                <p class="feedback-subtitle">Оставьте сообщение — я отвечу вам в ближайшее время</p>
+
+                <form class="feedback-form" id="feedbackForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Имя</label>
+                            <input type="text" id="name" placeholder="Введите ваше имя" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="example@mail.ru" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Тема</label>
+                        <select id="subject">
+                            <option value="question">❓ Вопрос по проекту</option>
+                            <option value="suggestion">💡 Предложение</option>
+                            <option value="bug">🐛 Сообщить об ошибке</option>
+                            <option value="cooperation">🤝 Сотрудничество</option>
+                            <option value="other">📌 Другое</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Сообщение</label>
+                        <textarea id="message" placeholder="Опишите ваш вопрос или предложение..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Оцените сайт</label>
+                        <div class="rating-group">
+                            <input type="radio" name="rating" id="star5" value="5">
+                            <label for="star5">⭐</label>
+                            <input type="radio" name="rating" id="star4" value="4">
+                            <label for="star4">⭐</label>
+                            <input type="radio" name="rating" id="star3" value="3">
+                            <label for="star3">⭐</label>
+                            <input type="radio" name="rating" id="star2" value="2">
+                            <label for="star2">⭐</label>
+                            <input type="radio" name="rating" id="star1" value="1">
+                            <label for="star1">⭐</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">🚀 Отправить</button>
+                </form>
+
+                <div class="success-message" id="successMessage">
+                    <div class="success-icon">✅</div>
+                    <h3>Сообщение отправлено!</h3>
+                    <p>Спасибо за обратную связь. Я отвечу вам в ближайшее время.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // НАСТРОЙКИ TELEGRAM БОТА (ВАШ ТОКЕН УЖЕ ВСТАВЛЕН)
+        // ============================================================
+        const TELEGRAM_BOT_TOKEN = '8875392399:AAHQRpXA9wLVher9g0TlEUxpWYeEJ7YEXqU';
+        const TELEGRAM_CHAT_ID = '1070461736';  // ⚠️ ВСТАВЬТЕ СВОЙ CHAT ID
+
+        // ============================================================
+        // ОТПРАВКА В TELEGRAM
+        // ============================================================
+        async function sendToTelegram(data) {
+            const text = `
+📩 НОВОЕ СООБЩЕНИЕ
+━━━━━━━━━━━━━━━━━━━
+👤 Имя: ${data.name}
+📧 Email: ${data.email}
+📌 Тема: ${data.subject}
+⭐ Рейтинг: ${data.rating}
+
+💬 Сообщение:
+${data.message}
+━━━━━━━━━━━━━━━━━━━
+📅 ${new Date().toLocaleString()}
+`;
+
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: text,
+                    parse_mode: 'HTML'
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.description || 'Ошибка отправки');
+            }
+
+            return response.json();
+        }
+
+        // ============================================================
+        // ОБРАБОТЧИК ФОРМЫ
+        // ============================================================
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = '⏳ Отправка...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value.trim(),
+                rating: document.querySelector('input[name="rating"]:checked')?.value || 'Не указан'
+            };
+
+            if (!formData.name || !formData.email || !formData.message) {
+                alert('⚠️ Пожалуйста, заполните все обязательные поля.');
+                submitBtn.textContent = '🚀 Отправить';
+                submitBtn.disabled = false;
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                alert('⚠️ Введите корректный email адрес.');
+                submitBtn.textContent = '🚀 Отправить';
+                submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                if (TELEGRAM_CHAT_ID === 'ВАШ_CHAT_ID') {
+                    console.log('📨 [DEMO] Форма отправлена:', formData);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                } else {
+                    await sendToTelegram(formData);
+                }
+
+                document.getElementById('feedbackForm').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+
+                if (window.playClickSound) window.playClickSound();
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert(`❌ Ошибка отправки: ${error.message}`);
+                submitBtn.textContent = '🚀 Отправить';
+                submitBtn.disabled = false;
+            }
+        });
+
+        console.log('%c📡 Обратная связь (Telegram)', 'font-size:18px; font-weight:bold; color:#00ffc8;');
+        console.log('%cТокен бота установлен. Вставьте свой CHAT_ID в код.', 'color:#667788;');
+    </script>
+</body>
+</html>
