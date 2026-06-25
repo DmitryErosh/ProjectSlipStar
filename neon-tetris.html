@@ -128,6 +128,19 @@
       transform: scale(0.96);
     }
 
+    /* ===== КНОПКА ВЫХОДА ===== */
+    .controls .exit-btn {
+      border-color: rgba(255, 0, 200, 0.3);
+      color: #ff88cc;
+      margin-top: 4px;
+    }
+
+    .controls .exit-btn:hover {
+      border-color: #ff00c8;
+      box-shadow: 0 0 30px rgba(255, 0, 200, 0.3), inset 0 0 20px rgba(255, 0, 200, 0.15);
+      color: #ffffff;
+    }
+
     .high-score {
       border-top: 1px solid #00ffff33;
       padding-top: 16px;
@@ -163,6 +176,22 @@
       background: #00ffff33;
       transform: scale(0.90);
       border-color: #00ffff;
+    }
+
+    /* ===== ВЕРНУТЬСЯ НА ГЛАВНУЮ (сверху) ===== */
+    .back-to-main {
+      display: inline-block;
+      color: #445566;
+      text-decoration: none;
+      font-size: 0.7rem;
+      font-family: 'Courier New', monospace;
+      transition: 0.3s;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .back-to-main:hover {
+      color: #00ffc8;
     }
 
     @media (max-width: 720px) {
@@ -201,6 +230,9 @@
 <body>
 <div class="game-wrapper">
   <div class="tetris-container">
+    <!-- ===== ССЫЛКА НА ГЛАВНУЮ (сверху) ===== -->
+    <a href="index.html" class="back-to-main">← Вернуться</a>
+
     <canvas id="gameCanvas" width="300" height="600"></canvas>
     <div class="touch-controls" id="touchControls">
       <button class="touch-btn" data-action="left">◀</button>
@@ -231,9 +263,12 @@
     <div class="controls">
       <button id="newGameBtn">✦ новая игра</button>
       <button id="pauseToggleBtn">⏸ пауза</button>
+      <!-- ===== КНОПКА ВЫХОДА ===== -->
+      <button id="exitGameBtn" class="exit-btn">🚪 выйти</button>
     </div>
   </div>
 </div>
+
 <script>
   (function() {
     // ---------- НЕОНОВЫЙ ТЕТРИС · КИБЕРПАНК ----------
@@ -652,6 +687,13 @@
       render();
     }
 
+    // ===== ВЫХОД НА ГЛАВНУЮ =====
+    function exitGame() {
+      if (confirm('Выйти из игры и вернуться на главную страницу?')) {
+        window.location.href = 'index.html';
+      }
+    }
+
     // ---- Инициализация и старт ----
     function init() {
       loadHighScore();
@@ -666,6 +708,7 @@
       // кнопки
       document.getElementById('newGameBtn').addEventListener('click', newGame);
       document.getElementById('pauseToggleBtn').addEventListener('click', togglePause);
+      document.getElementById('exitGameBtn').addEventListener('click', exitGame);
 
       // клавиатура
       window.addEventListener('keydown', (e) => {

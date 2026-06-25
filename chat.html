@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с нейросетью · Slip_Star</title>
+    <meta name="description" content="Диалоговый интерфейс для общения с ИИ-моделью через OpenRouter API. Поддерживает контекст диалога.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .chat-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-link {
+            color: #00ffc8;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: #ff00c8;
+            transform: translateX(-5px);
+        }
+
+        .chat-messages {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            animation: msgIn 0.3s ease;
+        }
+
+        @keyframes msgIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-message.user {
+            background: rgba(0, 255, 200, 0.08);
+            border: 1px solid rgba(0, 255, 200, 0.1);
+            margin-left: auto;
+            color: #ccddee;
+        }
+
+        .chat-message.assistant {
+            background: rgba(255, 0, 200, 0.05);
+            border: 1px solid rgba(255, 0, 200, 0.06);
+            color: #e0e0e0;
+        }
+
+        .chat-message .message-time {
+            font-size: 0.7rem;
+            color: #445566;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .chat-message .message-role {
+            font-size: 0.7rem;
+            color: #667788;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 200, 0.08);
+            border-radius: 30px;
+            color: #ccddee;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .chat-input-area input:focus {
+            border-color: #00ffc8;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.05);
+        }
+
+        .chat-input-area input::placeholder {
+            color: #445566;
+        }
+
+        .chat-input-area button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00ffc8, #00ccaa);
+            color: #0a0a0f;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .chat-input-area button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 255, 200, 0.15);
+        }
+
+        .chat-input-area button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #667788;
+            font-size: 0.9rem;
+            padding: 10px;
+            font-style: italic;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .model-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .model-selector label {
+            color: #667788;
+            font-size: 0.85rem;
+        }
+
+        .model-selector select {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 200, 0.08);
+            border-radius: 30px;
+            color: #ccddee;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .model-selector select:focus {
+            border-color: #00ffc8;
+        }
+
+        .status-indicator {
+            font-size: 0.8rem;
+            color: #667788;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .chat-message { max-width: 95%; }
+            .chat-input-area { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container chat-container">
+        <div class="chat-header">
+            <h1>💬 Чат с нейросетью</h1>
+            <a href="index.html" class="back-link">← Вернуться</a>
+        </div>
+
+        <div class="model-selector">
+            <label for="modelSelect">Модель:</label>
+            <select id="modelSelect">
+                <option value="openrouter/free" selected>OpenRouter Free (автовыбор)</option>
+                <option value="mistralai/mistral-7b-instruct">Mistral 7B</option>
+                <option value="meta-llama/llama-3-70b-instruct">Llama 3 70B</option>
+                <option value="google/gemma-2-9b-it">Gemma 2 9B</option>
+                <option value="deepseek/deepseek-chat">DeepSeek Chat</option>
+                <option value="google/gemma-4-31b-it:free">Gemma 4 31B (free)</option>
+                <option value="nvidia/nemotron-3-nano-30b-a3b:free">NVIDIA Nemotron (free)</option>
+            </select>
+        </div>
+
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
+            <div class="chat-message assistant">
+                <div class="message-role">🤖 Ассистент</div>
+                Привет! Я нейросетевая модель. Задай мне вопрос или просто поговори.
+                <span class="message-time">только что</span>
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">🤖 Нейросеть думает...</div>
+        <div class="status-indicator" id="statusIndicator">✅ Готов к работе</div>
+
+        <div class="chat-input-area">
+            <input type="text" id="messageInput" placeholder="Введите сообщение для нейросети..." aria-label="Сообщение для нейросети">
+            <button id="sendBtn">Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== КОНФИГУРАЦИЯ =====
+        // ⚠️ ВСТАВЬТЕ СВОЙ API КЛЮЧ ОТ OPENROUTER
+        // Получить можно здесь: https://openrouter.ai/keys
+        const OPENROUTER_API_KEY = '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';
+        const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+        let conversationHistory = [];
+        let isProcessing = false;
+
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const modelSelect = document.getElementById('modelSelect');
+
+        // ===== ДОБАВЛЕНИЕ СООБЩЕНИЯ =====
+        function addMessage(role, content) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${role}`;
+
+            const roleLabel = role === 'user' ? '👤 Вы' : '🤖 Ассистент';
+            const time = new Date().toLocaleTimeString();
+
+            msgDiv.innerHTML = `
+                <div class="message-role">${roleLabel}</div>
+                ${content}
+                <span class="message-time">${time}</span>
+            `;
+
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // ===== ОТПРАВКА ЗАПРОСА К OPENROUTER =====
+        async function sendToAI(userMessage) {
+            if (isProcessing) return;
+            
+            // Проверка ключа
+            if (!OPENROUTER_API_KEY) {
+                statusIndicator.textContent = '⚠️ API ключ не найден!';
+                statusIndicator.style.color = '#ffcc00';
+                return;
+            }
+
+            isProcessing = true;
+            sendBtn.disabled = true;
+            messageInput.disabled = true;
+            typingIndicator.classList.add('active');
+            statusIndicator.textContent = '⏳ Отправка запроса...';
+            statusIndicator.style.color = '#8899aa';
+
+            // Добавляем сообщение пользователя в историю
+            conversationHistory.push({ role: 'user', content: userMessage });
+            addMessage('user', userMessage);
+
+            try {
+                const response = await fetch(OPENROUTER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'Slip_Star Chat'
+                    },
+                    body: JSON.stringify({
+                        model: modelSelect.value,
+                        messages: conversationHistory,
+                        max_tokens: 1000,
+                        temperature: 0.7,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const errorMsg = errorData.error?.message || `HTTP ${response.status}`;
+                    
+                    // Автоматический fallback: если модель недоступна, пробуем openrouter/free
+                    if (errorMsg.includes('No endpoints found') || errorMsg.includes('Insufficient credits') || errorMsg.includes('not found')) {
+                        if (modelSelect.value !== 'openrouter/free') {
+                            statusIndicator.textContent = '⏳ Модель недоступна, пробую OpenRouter Free...';
+                            modelSelect.value = 'openrouter/free';
+                            
+                            const retryResponse = await fetch(OPENROUTER_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                                    'HTTP-Referer': window.location.href,
+                                    'X-Title': 'Slip_Star Chat'
+                                },
+                                body: JSON.stringify({
+                                    model: 'openrouter/free',
+                                    messages: conversationHistory,
+                                    max_tokens: 1000,
+                                    temperature: 0.7,
+                                    stream: false
+                                })
+                            });
+                            
+                            if (!retryResponse.ok) {
+                                const retryError = await retryResponse.json();
+                                throw new Error(retryError.error?.message || `HTTP ${retryResponse.status}`);
+                            }
+                            
+                            const retryData = await retryResponse.json();
+                            const assistantMessage = retryData.choices[0].message.content;
+                            conversationHistory.push({ role: 'assistant', content: assistantMessage });
+                            addMessage('assistant', assistantMessage);
+                            statusIndicator.textContent = '✅ Ответ получен (OpenRouter Free)';
+                            statusIndicator.style.color = '#00ffc8';
+                            return;
+                        }
+                    }
+                    
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                const assistantMessage = data.choices[0].message.content;
+
+                conversationHistory.push({ role: 'assistant', content: assistantMessage });
+                addMessage('assistant', assistantMessage);
+
+                statusIndicator.textContent = '✅ Ответ получен';
+                statusIndicator.style.color = '#00ffc8';
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                statusIndicator.textContent = `❌ Ошибка: ${error.message}`;
+                statusIndicator.style.color = '#ff4444';
+                addMessage('assistant', `⚠️ Ошибка: ${error.message}. Попробуйте позже.`);
+            } finally {
+                isProcessing = false;
+                sendBtn.disabled = false;
+                messageInput.disabled = false;
+                typingIndicator.classList.remove('active');
+                messageInput.focus();
+            }
+        }
+
+        // ===== ОБРАБОТЧИК ОТПРАВКИ =====
+        function handleSend() {
+            const text = messageInput.value.trim();
+            if (!text || isProcessing) return;
+
+            messageInput.value = '';
+            sendToAI(text);
+        }
+
+        // ===== СОБЫТИЯ =====
+        sendBtn.addEventListener('click', handleSend);
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+
+        // ===== ЗАПУСК =====
+        console.log('%c💬 Чат с нейросетью (OpenRouter)', 'font-size:18px; font-weight:bold; color:#00ffc8;');
+        console.log('%cПоддерживаемые модели:', 'color:#667788;', 
+            [...document.querySelectorAll('#modelSelect option')].map(o => o.value).join(', '));
+        
+        if (!OPENROUTER_API_KEY) {
+            statusIndicator.textContent = '⚠️ API ключ не найден! Вставьте его в код.';
+            statusIndicator.style.color = '#ffcc00';
+        } else {
+            statusIndicator.textContent = '✅ Готов к работе';
+            statusIndicator.style.color = '#00ffc8';
+        }
+    </script>
+</body>
+</html>

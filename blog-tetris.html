@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Notes: Neon Tetris · Slip_Star</title>
+    <meta name="description" content="Разработка тетриса в неоновом стиле с пульсирующими блоками и динамической подсветкой.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .blog-post-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .blog-post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .blog-post-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-link {
+            color: #00ffc8;
+            text-decoration: none;
+            transition: 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .back-link:hover {
+            color: #ff00c8;
+            transform: translateX(-5px);
+        }
+
+        .blog-post-content {
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.6), rgba(10, 10, 20, 0.8));
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .blog-post-content h2 {
+            color: #ccddee;
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+        }
+
+        .blog-post-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .blog-post-content h3 {
+            color: #aabbcc;
+            font-size: 1.1rem;
+            margin: 20px 0 10px;
+        }
+
+        .blog-post-content p {
+            color: #8899aa;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content .highlight {
+            color: #00ffc8;
+            font-weight: 600;
+        }
+
+        .blog-post-content .highlight-pink {
+            color: #ff00c8;
+            font-weight: 600;
+        }
+
+        .blog-post-content ul {
+            color: #8899aa;
+            line-height: 1.8;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content ul li {
+            margin-bottom: 5px;
+        }
+
+        .blog-post-content .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 16px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 200, 0.04);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .code-block-header:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .code-block-header .code-title {
+            color: #667788;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .code-block-header .code-toggle {
+            color: #00ffc8;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+
+        .code-block-header .code-toggle:hover {
+            color: #ff00c8;
+        }
+
+        .code-block-body {
+            display: none;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        .code-block-body.active {
+            display: block;
+            animation: codeFade 0.3s ease;
+        }
+
+        @keyframes codeFade {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-block-body pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.7;
+            color: #aabbcc;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block-body .comment {
+            color: #445566;
+        }
+        .code-block-body .string {
+            color: #88ff88;
+        }
+        .code-block-body .keyword {
+            color: #ff88ff;
+        }
+        .code-block-body .property {
+            color: #88ccff;
+        }
+        .code-block-body .selector {
+            color: #ffcc88;
+        }
+        .code-block-body .value {
+            color: #88ffaa;
+        }
+        .code-block-body .number {
+            color: #ffaa66;
+        }
+        .code-block-body .function {
+            color: #88ccff;
+        }
+
+        .game-preview {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-preview .preview-icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .game-preview .preview-text {
+            color: #445566;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+
+        .game-preview .neon-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(0, 255, 200, 0.03) 0%, transparent 70%);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .blog-post-footer {
+            border-top: 1px solid rgba(0, 255, 200, 0.05);
+            padding: 20px 0;
+            text-align: center;
+            color: #445566;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .blog-post-footer a {
+            color: #00ffc8;
+            text-decoration: none;
+        }
+
+        .blog-post-footer a:hover {
+            color: #ff00c8;
+        }
+
+        @media (max-width: 768px) {
+            .blog-post-content { padding: 20px; }
+            .blog-post-header h1 { font-size: 1.5rem; }
+            .code-block-body pre { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="blog-post-container">
+            <!-- ===== ШАПКА ===== -->
+            <div class="blog-post-header">
+                <h1>🧪 Lab Notes: Neon Tetris</h1>
+                <a href="index.html#blog" class="back-link">← Вернуться</a>
+            </div>
+
+            <!-- ===== СОДЕРЖАНИЕ ===== -->
+            <div class="blog-post-content">
+                <h2>📌 Задача</h2>
+                <p>Создать классическую игру <span class="highlight">Тетрис</span> в неоновом стиле с пульсирующими блоками, динамической подсветкой и элементами киберпанк-эстетики. Игра должна быть полностью рабочей и стильной.</p>
+
+                <div class="game-preview">
+                    <div class="neon-glow"></div>
+                    <span class="preview-icon">🟦</span>
+                    <div class="preview-text">🎮 Neon Tetris — играй прямо сейчас!</div>
+                    <a href="neon-tetris.html" style="color: #00ffc8; text-decoration: none; font-family: 'Courier New', monospace; font-size: 0.8rem; display: inline-block; margin-top: 8px; border: 1px solid rgba(0, 255, 200, 0.1); padding: 4px 16px; border-radius: 30px;">→ Играть</a>
+                </div>
+
+                <h2>🎮 Игровая механика</h2>
+                <p>Классические правила Тетриса:</p>
+                <ul>
+                    <li>7 фигур: <span class="highlight">I, O, T, S, Z, L, J</span></li>
+                    <li>Случайный спавн фигур</li>
+                    <li>Управление: <span class="highlight">стрелки</span> (влево/вправо/вниз/вращение)</li>
+                    <li><span class="highlight">Hard drop</span> — мгновенное падение фигуры (пробел)</li>
+                    <li><span class="highlight-pink">Система уровней</span> — скорость растёт с каждой 5-й очищенной линией</li>
+                    <li>Подсчёт очков и рекорд в <span class="highlight">localStorage</span></li>
+                </ul>
+
+                <!-- ===== БЛОК С КОДОМ 1 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Фигуры и цвета</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">// ===== ФИГУРЫ И ЦВЕТА =====</span>
+<span class="keyword">const</span> <span class="variable">SHAPES</span> = [
+    <span class="comment">// I</span>
+    [[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>]],
+    <span class="comment">// O</span>
+    [[<span class="number">1</span>,<span class="number">1</span>],[<span class="number">1</span>,<span class="number">1</span>]],
+    <span class="comment">// T</span>
+    [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>],[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>]],
+    <span class="comment">// S</span>
+    [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>],[<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>]],
+    <span class="comment">// Z</span>
+    [[<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>],[<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>]],
+    <span class="comment">// L</span>
+    [[<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>],[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>]],
+    <span class="comment">// J</span>
+    [[<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>],[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>]]
+];
+
+<span class="keyword">const</span> <span class="variable">COLORS</span> = [
+    <span class="string">'#00f0f0'</span>, <span class="comment">// I — циан</span>
+    <span class="string">'#f0f000'</span>, <span class="comment">// O — жёлтый</span>
+    <span class="string">'#a000f0'</span>, <span class="comment">// T — фиолетовый</span>
+    <span class="string">'#00f000'</span>, <span class="comment">// S — зелёный</span>
+    <span class="string">'#f00000'</span>, <span class="comment">// Z — красный</span>
+    <span class="string">'#f0a000'</span>, <span class="comment">// L — оранжевый</span>
+    <span class="string">'#0000f0'</span>   <span class="comment">// J — синий</span>
+];
+</pre>
+                    </div>
+                </div>
+
+                <h2>💡 Неоновый стиль</h2>
+                <p>Каждый блок в игре имеет:</p>
+                <ul>
+                    <li><span class="highlight">Свечение (box-shadow)</span> — неоновый эффект</li>
+                    <li><span class="highlight-pink">Градиентную заливку</span> — объёмный вид</li>
+                    <li><span class="highlight">Пульсирующую подсветку</span> — блоки мерцают</li>
+                    <li><span class="highlight-pink">Тёмный фон</span> — с сеткой и эффектом глубины</li>
+                </ul>
+
+                <!-- ===== БЛОК С КОДОМ 2 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Отрисовка неонового блока</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">// ===== НЕОНОВАЯ ОТРИСОВКА БЛОКА =====</span>
+<span class="keyword">function</span> <span class="function">drawBlock</span>(col, row, color, isBoard) {
+    <span class="keyword">const</span> x = col * BLOCK_SIZE;
+    <span class="keyword">const</span> y = row * BLOCK_SIZE;
+    <span class="keyword">const</span> size = BLOCK_SIZE - 1;
+
+    <span class="comment">// Свечение</span>
+    ctx.shadowColor = color;
+    ctx.shadowBlur = isBoard ? <span class="number">18</span> : <span class="number">30</span>;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, size, size);
+
+    <span class="comment">// Внутренний блик (градиент)</span>
+    ctx.shadowBlur = <span class="number">0</span>;
+    <span class="keyword">const</span> grad = ctx.createRadialGradient(
+        x+<span class="number">4</span>, y+<span class="number">4</span>, <span class="number">2</span>,
+        x+<span class="number">10</span>, y+<span class="number">10</span>, <span class="number">14</span>
+    );
+    grad.addColorStop(<span class="number">0</span>, <span class="string">'#ffffff88'</span>);
+    grad.addColorStop(<span class="number">0.5</span>, <span class="string">'#ffffff22'</span>);
+    grad.addColorStop(<span class="number">1</span>, <span class="string">'#ffffff00'</span>);
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, size, size);
+
+    <span class="comment">// Рамка</span>
+    ctx.strokeStyle = <span class="string">'#ffffff44'</span>;
+    ctx.lineWidth = <span class="number">1</span>;
+    ctx.strokeRect(x, y, size, size);
+}
+</pre>
+                    </div>
+                </div>
+
+                <h2>🎯 Управление и UX</h2>
+                <p>Игра поддерживает:</p>
+                <ul>
+                    <li><span class="highlight">Клавиатуру</span> — стрелки + пробел + P (пауза)</li>
+                    <li><span class="highlight-pink">Мобильные устройства</span> — сенсорные кнопки</li>
+                    <li><span class="highlight">Паузу</span> — по клавише P или кнопке</li>
+                    <li><span class="highlight-pink">Сохранение рекорда</span> — в localStorage</li>
+                </ul>
+
+                <!-- ===== БЛОК С КОДОМ 3 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Обработка клавиш</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">// ===== ОБРАБОТКА КЛАВИШ =====</span>
+window.addEventListener(<span class="string">'keydown'</span>, (e) => {
+    <span class="keyword">const</span> key = e.key;
+    <span class="keyword">if</span> ([<span class="string">'ArrowUp'</span>,<span class="string">'ArrowDown'</span>,<span class="string">'ArrowLeft'</span>,<span class="string">'ArrowRight'</span>,<span class="string">' '</span>].includes(key)) {
+        e.preventDefault();
+    }
+    <span class="keyword">if</span> (gameOver || paused) {
+        <span class="keyword">if</span> (key === <span class="string">'p'</span> || key === <span class="string">'P'</span>) togglePause();
+        <span class="keyword">return</span>;
+    }
+    <span class="keyword">switch</span>(key) {
+        <span class="keyword">case</span> <span class="string">'ArrowLeft'</span>: movePiece(-<span class="number">1</span>, <span class="number">0</span>); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="string">'ArrowRight'</span>: movePiece(<span class="number">1</span>, <span class="number">0</span>); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="string">'ArrowDown'</span>: movePiece(<span class="number">0</span>, <span class="number">1</span>); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="string">'ArrowUp'</span>: rotateCurrent(); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="string">' '</span>: hardDrop(); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="string">'p'</span>: togglePause(); <span class="keyword">break</span>;
+    }
+});
+</pre>
+                    </div>
+                </div>
+
+                <h2>📊 Результат</h2>
+                <p>✅ Полноценный Тетрис с неоновой графикой<br>
+                ✅ Управление с клавиатуры и сенсорных кнопок<br>
+                ✅ Система очков, уровней и рекордов<br>
+                ✅ Пауза и новая игра<br>
+                ✅ Адаптивный дизайн для всех устройств</p>
+
+                <h2>🚀 Ссылки</h2>
+                <p>
+                    <a href="neon-tetris.html" style="color: #00ffc8; text-decoration: none;">→ Играть в Neon Tetris</a><br>
+                    <a href="https://github.com/DmitryErosh/ProjectSlipStar/blob/main/neon-tetris.html" target="_blank" style="color: #00ffc8; text-decoration: none;">→ Исходный код</a>
+                </p>
+            </div>
+
+            <!-- ===== ПОДВАЛ ===== -->
+            <div class="blog-post-footer">
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span> Slip_Star · Lab Notes 
+                <span style="opacity:0.3;">//</span> 
+                <a href="index.html#blog">← Вернуться к записям</a>
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ТОГГЛ КОДА =====
+        function toggleCode(headerElement) {
+            const body = headerElement.nextElementSibling;
+            const toggle = headerElement.querySelector('.code-toggle');
+            
+            if (body.classList.contains('active')) {
+                body.classList.remove('active');
+                toggle.textContent = '▼ Показать код';
+            } else {
+                body.classList.add('active');
+                toggle.textContent = '▲ Скрыть код';
+            }
+        }
+
+        console.log('%c🧪 Lab Notes: Neon Tetris', 'font-size:18px; font-weight:bold; color:#00ffc8;');
+        console.log('%cИгра в неоновом стиле с пульсирующими блоками.', 'color:#667788;');
+    </script>
+</body>
+</html>

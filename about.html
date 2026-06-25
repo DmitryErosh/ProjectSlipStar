@@ -3,57 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Об авторе · Project Slip_Star</title>
+    <title>Об авторе · Slip_Star</title>
+    <meta name="description" content="Slip_Star — разработчик, создающий проекты в стиле киберпанк. Навыки, опыт, контакты.">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Дополнительные стили только для страницы about */
+        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
         .about-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
-            min-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .about-card {
-            background: linear-gradient(145deg, rgba(20, 20, 35, 0.9), rgba(10, 10, 20, 0.95));
-            border: 1px solid rgba(0, 255, 200, 0.08);
-            border-radius: 30px;
-            padding: 40px;
+            padding: 20px;
             position: relative;
-            overflow: hidden;
-            text-align: center;
+            z-index: 1;
         }
 
-        .about-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, rgba(0, 255, 200, 0.03) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
+        .about-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .about-header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .back-link {
-            display: inline-block;
             color: #00ffc8;
             text-decoration: none;
-            margin-bottom: 30px;
             transition: 0.3s;
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
-            position: relative;
-            z-index: 1;
-            text-align: left;
-            width: 100%;
         }
 
         .back-link:hover {
@@ -61,137 +47,584 @@
             transform: translateX(-5px);
         }
 
-        /* ===== АВАТАРКА С ФОТО ===== */
-        .avatar-img {
-            width: 150px;
-            height: 150px;
+        /* ===== ПРОФИЛЬ ===== */
+        .profile-section {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.6), rgba(10, 10, 20, 0.8));
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 30px;
+            padding: 30px;
+        }
+
+        .profile-avatar {
+            flex-shrink: 0;
+        }
+
+        .profile-avatar img {
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #00ffc8;
-            box-shadow: 0 0 30px rgba(0, 255, 200, 0.2);
-            margin-bottom: 25px;
+            box-shadow: 0 0 40px rgba(0, 255, 200, 0.15);
             transition: 0.3s;
-            position: relative;
-            z-index: 1;
         }
 
-        .avatar-img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 50px rgba(0, 255, 200, 0.4);
+        .profile-avatar img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 60px rgba(0, 255, 200, 0.25);
         }
 
-        h1 {
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info .glitch-name {
             font-size: 2.5rem;
+            font-weight: 700;
             background: linear-gradient(135deg, #00ffc8, #ff00c8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 5px;
         }
 
-        .bio {
+        .profile-info .tagline {
+            color: #8899aa;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .profile-info .tagline::before {
+            content: '> ';
+            color: #00ffc8;
+            opacity: 0.5;
+        }
+
+        .profile-info .bio-text {
             color: #8899aa;
             line-height: 1.8;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-            text-align: left;
+            margin-bottom: 15px;
         }
 
-        .bio strong {
+        .profile-info .bio-text strong {
             color: #ccddee;
         }
 
-        .links {
+        /* ===== НАВЫКИ (SKILLS) ===== */
+        .skills-section {
+            margin-bottom: 60px;
+        }
+
+        .skills-section h2 {
+            font-size: 1.8rem;
+            color: #ccddee;
+            margin-bottom: 25px;
             display: flex;
+            align-items: center;
             gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-            position: relative;
-            z-index: 1;
-            justify-content: center;
         }
 
-        .links a {
-            color: #00ffc8;
-            text-decoration: none;
-            padding: 8px 20px;
-            border: 1px solid rgba(0, 255, 200, 0.1);
-            border-radius: 30px;
+        .skills-section h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0, 255, 200, 0.3), transparent);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .skill-card {
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.6), rgba(10, 10, 20, 0.8));
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 20px;
+            padding: 20px 25px;
             transition: 0.3s;
-            font-size: 0.9rem;
         }
 
-        .links a:hover {
-            background: rgba(0, 255, 200, 0.05);
-            border-color: #00ffc8;
-            box-shadow: 0 0 20px rgba(0, 255, 200, 0.05);
+        .skill-card:hover {
+            border-color: rgba(0, 255, 200, 0.12);
+            transform: translateY(-3px);
         }
 
-        .glitch {
-            color: #445566;
+        .skill-card .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .skill-card .skill-name {
+            color: #ccddee;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .skill-card .skill-icon {
+            font-size: 1.5rem;
+        }
+
+        .skill-card .skill-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .skill-card .skill-bar .skill-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #00ffc8, #ff00c8);
+            transition: width 1s ease;
+            width: 0%;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.15);
+        }
+
+        .skill-card .skill-percent {
+            color: #667788;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ===== ТАЙМЛАЙН ===== */
+        .timeline-section {
+            margin-bottom: 60px;
+        }
+
+        .timeline-section h2 {
+            font-size: 1.8rem;
+            color: #ccddee;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .timeline-section h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0, 255, 200, 0.3), transparent);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00ffc8, #ff00c8, #00ffc8);
+            opacity: 0.3;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 25px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            background: #00ffc8;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.3);
+            border: 2px solid #0a0a0f;
+        }
+
+        .timeline-item .timeline-date {
+            color: #00ffc8;
             font-family: 'Courier New', monospace;
             font-size: 0.8rem;
-            margin-top: 30px;
-            letter-spacing: 2px;
-            position: relative;
-            z-index: 1;
+            letter-spacing: 1px;
         }
 
-        .back-to-main {
-            text-align: center;
-            margin-top: 30px;
-            position: relative;
-            z-index: 1;
+        .timeline-item .timeline-title {
+            color: #ccddee;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 3px 0 5px;
         }
 
-        .back-to-main a {
-            color: #667788;
-            text-decoration: none;
-            transition: 0.3s;
+        .timeline-item .timeline-desc {
+            color: #8899aa;
             font-size: 0.9rem;
+            line-height: 1.6;
         }
 
-        .back-to-main a:hover {
+        .timeline-item .timeline-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .timeline-item .timeline-tags span {
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: rgba(0, 255, 200, 0.04);
+            color: #667788;
+            border: 1px solid rgba(0, 255, 200, 0.04);
+        }
+
+        /* ===== КОНТАКТЫ ===== */
+        .contact-section {
+            margin-bottom: 40px;
+        }
+
+        .contact-section h2 {
+            font-size: 1.8rem;
+            color: #ccddee;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-section h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0, 255, 200, 0.3), transparent);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.6), rgba(10, 10, 20, 0.8));
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 20px;
+            padding: 20px 25px;
+            text-align: center;
+            transition: 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .contact-card:hover {
+            border-color: rgba(0, 255, 200, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .contact-card .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .contact-card .contact-label {
+            color: #667788;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .contact-card .contact-value {
+            color: #ccddee;
+            font-size: 0.9rem;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+
+        .contact-card .copy-btn {
+            margin-top: 8px;
+            padding: 4px 14px;
+            background: rgba(0, 255, 200, 0.04);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 30px;
+            color: #667788;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .contact-card .copy-btn:hover {
+            border-color: #00ffc8;
             color: #00ffc8;
         }
 
+        .contact-card .copy-btn.copied {
+            border-color: #00ffc8;
+            color: #00ffc8;
+            background: rgba(0, 255, 200, 0.05);
+        }
+
+        /* ===== РАДАР (для будущего расширения) ===== */
+        .radar-placeholder {
+            text-align: center;
+            color: #445566;
+            font-size: 0.9rem;
+            padding: 30px;
+            border: 1px dashed rgba(0, 255, 200, 0.06);
+            border-radius: 20px;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
         @media (max-width: 768px) {
-            .about-card { padding: 25px; }
-            h1 { font-size: 2rem; }
-            .avatar-img { width: 120px; height: 120px; }
+            .profile-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+            }
+            .profile-avatar img { width: 140px; height: 140px; }
+            .profile-info .glitch-name { font-size: 2rem; }
+            .timeline { padding-left: 20px; }
+            .timeline-item { padding-left: 15px; }
+            .timeline-item::before { left: -17px; width: 10px; height: 10px; }
+            .contact-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .contact-grid { grid-template-columns: 1fr; }
+            .skills-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="about-container">
-            <div class="about-card">
+            <!-- ===== ШАПКА ===== -->
+            <div class="about-header">
+                <h1>// ОБ АВТОРЕ</h1>
                 <a href="index.html" class="back-link">← Вернуться</a>
-
-                <!-- ===== АВАТАРКА С ФОТО ===== -->
-                <img src="avatar.jpg" alt="Slip_Star" class="avatar-img">
-
-                <h1>Slip_Star</h1>
-                <div class="bio">
-                    <p>Привет! Я <strong>Slip_Star</strong> — Дмитрий</p>
-                    <p>Разработчик, создающий проекты в основном при помощии <strong>ИИ</strong>.</p>
-                    <p style="margin-top: 15px;">Моя цель — объединять код, дизайн и креативность в интерактивные продукты. Здесь собраны мои лучшие работы — от веб-приложений до игровых интерфейсов.</p>
-                    <p style="margin-top: 15px;">Каждый проект — это эксперимент, в котором я пробую новые технологии и подходы.</p>
-                </div>
-                <div class="links">
-                    <a href="https://github.com/DmitryErosh" target="_blank" rel="noopener noreferrer">GitHub</a>
-                    <a href="https://vk.com/dmitry_eroshkin" target="_blank" rel="noopener noreferrer">ВКонтакте</a>
-                    <a href="https://t.me/di_ero" target="_blank" rel="noopener noreferrer">Telegram</a>
-                </div>
-                <div class="glitch">// system.creator = "Slip_Star" // version 2.0</div>
             </div>
-            <div class="back-to-main">
-                <a href="index.html">← На главную</a>
+
+            <!-- ===== ПРОФИЛЬ ===== -->
+            <div class="profile-section">
+                <div class="profile-avatar">
+                    <img src="avatar.jpg" alt="Slip_Star">
+                </div>
+                <div class="profile-info">
+                    <div class="glitch-name">Slip_Star</div>
+                    <div class="tagline">system.creator = "Дмитрий" // разработчик, киберпанк-энтузиаст</div>
+                    <div class="bio-text">
+                        <p>Привет! Я <strong>Дмитрий</strong> — разработчик, который создаёт проекты в стиле киберпанк. Я объединяю код, дизайн и креативность в интерактивные продукты.</p>
+                        <p style="margin-top: 10px;">Мой путь начался с экспериментов с веб-технологиями и перерос в создание полноценных приложений, игр и ИИ-интерфейсов. Каждый проект — это возможность попробовать что-то новое.</p>
+                        <p style="margin-top: 10px; color: #667788; font-family: 'Courier New', monospace; font-size: 0.8rem;">
+                            > skills: [HTML, CSS, JavaScript, Python, AI, GameDev]
+                        </p>
+                    </div>
+                </div>
             </div>
+
+            <!-- ===== НАВЫКИ (SKILLS) ===== -->
+            <div class="skills-section">
+                <h2>⚡ Навыки</h2>
+                <div class="skills-grid" id="skillsGrid">
+                    <!-- Генерируется через JavaScript -->
+                </div>
+            </div>
+
+            <!-- ===== ТАЙМЛАЙН (EXPERIENCE) ===== -->
+            <div class="timeline-section">
+                <h2>📜 Хронология</h2>
+                <div class="timeline" id="timeline">
+                    <!-- Генерируется через JavaScript -->
+                </div>
+            </div>
+
+            <!-- ===== КОНТАКТЫ ===== -->
+            <div class="contact-section">
+                <h2>📡 Контакты</h2>
+                <div class="contact-grid">
+                    <a href="mailto:di_ero@example.com" class="contact-card" id="emailCard">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-label">Email</div>
+                        <div class="contact-value">di_ero@example.com</div>
+                        <button class="copy-btn" id="copyEmailBtn">📋 Копировать</button>
+                    </a>
+                    <a href="https://github.com/DmitryErosh" target="_blank" rel="noopener noreferrer" class="contact-card">
+                        <div class="contact-icon">🐙</div>
+                        <div class="contact-label">GitHub</div>
+                        <div class="contact-value">DmitryErosh</div>
+                    </a>
+                    <a href="https://t.me/di_ero" target="_blank" rel="noopener noreferrer" class="contact-card">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-label">Telegram</div>
+                        <div class="contact-value">@di_ero</div>
+                    </a>
+                    <a href="https://vk.com/dmitry_eroshkin" target="_blank" rel="noopener noreferrer" class="contact-card">
+                        <div class="contact-icon">💬</div>
+                        <div class="contact-label">ВКонтакте</div>
+                        <div class="contact-value">Дмитрий</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ===== ФУТЕР ===== -->
+            <footer style="border-top: 1px solid rgba(0, 255, 200, 0.05); padding: 20px 0; text-align: center; color: #445566; font-size: 0.7rem; letter-spacing: 1px; margin-top: 20px;">
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span> Slip_Star · 2026 
+                <span style="opacity:0.3;">//</span> 
+                cyberpunk · code · neon 
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span>
+            </footer>
         </div>
     </div>
+
+    <script>
+        // ===== НАВЫКИ =====
+        const skills = [
+            { name: 'HTML / CSS', icon: '🎨', percent: 90 },
+            { name: 'JavaScript', icon: '⚡', percent: 85 },
+            { name: 'Python', icon: '🐍', percent: 70 },
+            { name: 'React / Vue', icon: '⚛️', percent: 60 },
+            { name: 'GameDev (JS)', icon: '🕹️', percent: 75 },
+            { name: 'AI / API', icon: '🧠', percent: 65 },
+            { name: 'UI/UX Design', icon: '🎯', percent: 70 },
+            { name: 'Git / CI', icon: '🔧', percent: 80 }
+        ];
+
+        function renderSkills() {
+            const grid = document.getElementById('skillsGrid');
+            grid.innerHTML = '';
+
+            skills.forEach(skill => {
+                const card = document.createElement('div');
+                card.className = 'skill-card';
+                card.innerHTML = `
+                    <div class="skill-header">
+                        <span class="skill-name">${skill.name}</span>
+                        <span class="skill-icon">${skill.icon}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="skill-percent">${skill.percent}%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-fill" data-percent="${skill.percent}"></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Анимация заполнения при появлении
+            animateSkills();
+        }
+
+        function animateSkills() {
+            const fills = document.querySelectorAll('.skill-fill');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const fill = entry.target;
+                        const percent = fill.dataset.percent;
+                        setTimeout(() => {
+                            fill.style.width = `${percent}%`;
+                        }, 200);
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            fills.forEach(fill => observer.observe(fill));
+        }
+
+        // ===== ТАЙМЛАЙН =====
+        const timelineData = [
+            {
+                date: '2026',
+                title: 'Project Slip_Star',
+                desc: 'Создание портфолио в стиле киберпанк. Интеграция ИИ-чата, игр и интерактивных проектов.',
+                tags: ['Портфолио', 'Киберпанк', 'ИИ']
+            },
+            {
+                date: '2025 — 2026',
+                title: 'Барабаны сепараторов',
+                desc: 'Разработка производственного веб-приложения с синхронизацией через Google Sheets и историей замен.',
+                tags: ['Веб-приложение', 'Google Sheets API', 'Производство']
+            },
+            {
+                date: '2024 — 2025',
+                title: 'Игровые проекты',
+                desc: 'Создание Neon Tetris, игрового дашборда и эксперименты с гейм-дизайном в браузере.',
+                tags: ['GameDev', 'JavaScript', 'Игры']
+            },
+            {
+                date: '2023 — 2024',
+                title: 'Изучение ИИ и API',
+                desc: 'Интеграция нейросетей в веб-приложения. Эксперименты с OpenRouter, ChatGPT и локальными моделями.',
+                tags: ['AI', 'API', 'OpenRouter']
+            }
+        ];
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            container.innerHTML = '';
+
+            timelineData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'timeline-item';
+                div.innerHTML = `
+                    <div class="timeline-date">${item.date}</div>
+                    <div class="timeline-title">${item.title}</div>
+                    <div class="timeline-desc">${item.desc}</div>
+                    <div class="timeline-tags">
+                        ${item.tags.map(tag => `<span>#${tag}</span>`).join('')}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // ===== КОПИРОВАНИЕ EMAIL =====
+        document.getElementById('copyEmailBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const email = 'di_ero@example.com';
+            navigator.clipboard.writeText(email).then(() => {
+                this.textContent = '✅ Скопировано!';
+                this.classList.add('copied');
+                setTimeout(() => {
+                    this.textContent = '📋 Копировать';
+                    this.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = email;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                this.textContent = '✅ Скопировано!';
+                setTimeout(() => {
+                    this.textContent = '📋 Копировать';
+                }, 2000);
+            });
+        });
+
+        // ===== ИНИЦИАЛИЗАЦИЯ =====
+        renderSkills();
+        renderTimeline();
+
+        console.log('%c📡 Страница об авторе загружена', 'color:#00ffc8; font-size:16px;');
+        console.log('%cНавыки и таймлайн активированы', 'color:#667788;');
+    </script>
 </body>
 </html>

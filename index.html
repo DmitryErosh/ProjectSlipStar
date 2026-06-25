@@ -2,71 +2,127 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- ===== SEO И МЕТА ===== -->
     <title>Slip_Star · Проекты в стиле киберпанк</title>
-    <meta name="description" content="Портфолио разработчика Slip_Star. Проекты в стиле киберпанк: веб-приложения, игры, ИИ-интерфейсы. Интерактивные демо и исходный код.">
-    <meta name="keywords" content="портфолио разработчика, киберпанк, веб-разработка, игры, ИИ, JavaScript, HTML, CSS">
+    <meta name="description" content="Портфолио разработчика Slip_Star. Проекты в стиле киберпанк: веб-приложения, игры, ИИ-интерфейсы.">
+    <meta name="keywords" content="портфолио разработчика, киберпанк, веб-разработка, игры, ИИ, JavaScript">
     <meta name="author" content="Slip_Star">
     <meta name="robots" content="index, follow">
     
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://dmitryerosh.github.io/Seporator/">
+    <meta property="og:url" content="https://github.com/DmitryErosh/ProjectSlipStar">
     <meta property="og:title" content="Slip_Star · Проекты в стиле киберпанк">
-    <meta property="og:description" content="Портфолио разработчика Slip_Star. Проекты в стиле киберпанк: веб-приложения, игры, ИИ-интерфейсы.">
-    <meta property="og:image" content="https://dmitryerosh.github.io/Seporator/og-image.jpg">
+    <meta property="og:description" content="Портфолио разработчика Slip_Star. Проекты в стиле киберпанк.">
+    <meta property="og:image" content="https://github.com/DmitryErosh/ProjectSlipStar/og-image.jpg">
     
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Slip_Star · Проекты в стиле киберпанк">
-    <meta name="twitter:description" content="Портфолио разработчика с проектами в стиле киберпанк.">
-    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ===== PARTICLE BACKGROUND ===== -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== ТОГГЛ ЭФФЕКТОВ ===== -->
+    <button class="effects-toggle" id="effectsToggle">◈ ЭФФЕКТЫ</button>
+
+    <!-- ===== PROGRESS BAR ===== -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- ===== КНОПКА BACK TO TOP ===== -->
+    <button class="back-to-top" id="backToTop" aria-label="Наверх">
+        <svg viewBox="0 0 24 24" width="28" height="28">
+            <path d="M12 4l-8 8 1.5 1.5L12 7l6.5 6.5L20 12l-8-8z" fill="currentColor"/>
+            <path d="M4 20h16v-2H4v2z" fill="currentColor"/>
+        </svg>
+    </button>
+
+    <!-- ===== DARK WEB SIMULATOR ===== -->
+    <div class="dark-web-toggle" id="darkWebToggle">
+        <span>⬛</span> Dark Web
+    </div>
+    <div class="dark-web-terminal" id="darkWebTerminal">
+        <div class="terminal-header">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+            <span class="terminal-title">DARK WEB SIMULATOR v2.0</span>
+            <button class="terminal-close" id="terminalClose">✕</button>
+        </div>
+        <div class="terminal-body" id="terminalBody">
+            <div class="terminal-line">> SYSTEM: INITIALIZING DARK WEB ACCESS...</div>
+            <div class="terminal-line">> CONNECTION: ENCRYPTED 🔒</div>
+            <div class="terminal-line">> NODE: SLIP_STAR_DB</div>
+            <div class="terminal-line">> COMMANDS: help, projects, stats, about, contact, clear</div>
+            <div class="terminal-line terminal-prompt" id="terminalPrompt">
+                <span class="prompt-symbol">></span>
+                <input type="text" id="terminalInput" placeholder="введите команду..." autofocus>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== МИНИ-ИГРА В HEADER ===== -->
+    <div class="game-mini-toggle" id="gameMiniToggle">🎮 Игра</div>
+    <div class="game-mini-container" id="gameMiniContainer">
+        <div class="game-mini-header">
+            <span>NEON DODGE</span>
+            <button class="game-mini-close" id="gameMiniClose">✕</button>
+        </div>
+        <div class="game-mini-canvas-wrapper">
+            <canvas id="gameMiniCanvas" width="400" height="300"></canvas>
+        </div>
+        <div class="game-mini-controls">
+            <span>Счёт: <span id="gameMiniScore">0</span></span>
+            <button id="gameMiniRestart">↻</button>
+        </div>
+        <div class="game-mini-hint">◀ ▶ — двигаться</div>
+    </div>
 
     <div class="container">
         <!-- ===== ШАПКА ===== -->
         <header class="header" role="banner">
             <div class="logo" aria-label="Project Slip Star">
                 Project Slip_Star
-                <span>// v2.0</span>
+                <span>// v3.0</span>
             </div>
-            <nav class="nav" role="navigation" aria-label="Основная навигация">
-                <a href="#projects">Проекты</a>
-                <a href="#stats">Статистика</a>
-                <a href="about.html">Об авторе</a>
-                <a href="feedback.html">📡 Обратная связь</a>
-                <a href="https://github.com/DmitryErosh" target="_blank" rel="noopener noreferrer" aria-label="GitHub профиль">GitHub</a>
+            <nav class="nav-terminal" role="navigation" aria-label="Основная навигация">
+                <a href="#projects" class="nav-link active" data-target="projects">[ПРОЕКТЫ]</a>
+                <a href="#stats" class="nav-link" data-target="stats">[СТАТИСТИКА]</a>
+                <a href="#blog" class="nav-link" data-target="blog">[ЛАБА]</a>
+                <a href="about.html" class="nav-link">[ОБ АВТОРЕ]</a>
+                <a href="feedback.html" class="nav-link">[ОБРАТНАЯ СВЯЗЬ]</a>
+                <a href="https://github.com/DmitryErosh" target="_blank" rel="noopener noreferrer" class="nav-link">[GITHUB]</a>
             </nav>
         </header>
 
         <!-- ===== ГЕРОЙ ===== -->
         <section class="hero" aria-labelledby="hero-title">
-            <h1 id="hero-title">Добро пожаловать<br>в мою лабораторию</h1>
+            <h1 id="hero-title" class="glitch" data-text="Добро пожаловать в мою лабораторию">
+                Добро пожаловать<br>в мою лабораторию
+            </h1>
             <p>Здесь собраны мои проекты — от экспериментов с кодом до готовых решений. Каждый проект — это шаг вперёд.</p>
-            <div class="glitch-text" role="status" aria-live="polite">system.ready = true // загрузка завершена</div>
+            <div class="typing-text" role="status" aria-live="polite">system.ready = true // загрузка завершена</div>
         </section>
 
-        <!-- ===== СТАТИСТИКА (динамическая) ===== -->
+        <!-- ===== СТАТИСТИКА (с анимацией при скролле) ===== -->
         <div class="stats" id="stats" role="region" aria-label="Статистика проектов">
             <div class="stat-item" role="article">
-                <div class="number" id="projectCount" aria-label="Всего проектов">0</div>
+                <div class="number" id="projectCount" data-target="6">0</div>
                 <div class="label">Всего проектов</div>
             </div>
             <div class="stat-item" role="article">
-                <div class="number" id="doneCount" aria-label="Завершено">0</div>
+                <div class="number" id="doneCount" data-target="2">0</div>
                 <div class="label">Завершено</div>
             </div>
             <div class="stat-item" role="article">
-                <div class="number" id="wipCount" aria-label="В работе">0</div>
+                <div class="number" id="wipCount" data-target="3">0</div>
                 <div class="label">В работе</div>
             </div>
             <div class="stat-item" role="article">
-                <div class="number" id="ideaCount" aria-label="Идеи">0</div>
+                <div class="number" id="ideaCount" data-target="1">0</div>
                 <div class="label">Идеи</div>
             </div>
         </div>
@@ -78,8 +134,21 @@
                 <span class="accent">// interactive</span>
             </h2>
 
-            <!-- ===== ФИЛЬТРЫ ===== -->
-            <div class="filters" id="filterContainer" role="group" aria-label="Фильтр проектов">
+            <div class="search-filter-area">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Поиск проектов..." aria-label="Поиск проектов">
+                    <button id="clearSearchBtn" class="clear-search" aria-label="Очистить поиск">✕</button>
+                </div>
+                <div class="category-filters" id="categoryFilters" role="group" aria-label="Категории проектов">
+                    <button class="category-btn active" data-category="all">Все</button>
+                    <button class="category-btn" data-category="games">🎮 Игры</button>
+                    <button class="category-btn" data-category="ai">🧠 AI</button>
+                    <button class="category-btn" data-category="tools">🛠️ Инструменты</button>
+                    <button class="category-btn" data-category="web">🌐 Веб</button>
+                </div>
+            </div>
+
+            <div class="filters" id="filterContainer" role="group" aria-label="Фильтр по статусу">
                 <button class="filter-btn active" data-filter="all" aria-pressed="true">Все</button>
                 <button class="filter-btn" data-filter="done" aria-pressed="false">✅ Готово</button>
                 <button class="filter-btn" data-filter="wip" aria-pressed="false">⚡ В работе</button>
@@ -88,6 +157,21 @@
 
             <div class="projects-grid" id="projectsGrid" role="list">
                 <!-- Карточки генерируются через JavaScript -->
+            </div>
+
+            <div class="no-results" id="noResults" style="display: none;">
+                <p>🔍 Проектов не найдено. Попробуйте изменить фильтр.</p>
+            </div>
+        </div>
+
+        <!-- ===== BLOG / LAB NOTES ===== -->
+        <div id="blog">
+            <h2 class="section-title">
+                <span>🧪 Lab Notes</span>
+                <span class="accent">// дневник разработки</span>
+            </h2>
+            <div class="blog-grid" id="blogGrid">
+                <!-- Генерируется через JavaScript -->
             </div>
         </div>
 
@@ -112,6 +196,7 @@
             <div class="modal-desc" id="modalDesc">Описание проекта</div>
             <div class="modal-details" id="modalDetails">
                 <div class="detail-row"><span class="label">Статус</span><span class="value" id="modalStatus">—</span></div>
+                <div class="detail-row"><span class="label">Категория</span><span class="value" id="modalCategory">—</span></div>
                 <div class="detail-row"><span class="label">Теги</span><span class="value" id="modalTags">—</span></div>
                 <div class="detail-row"><span class="label">Дата</span><span class="value" id="modalDate">—</span></div>
             </div>
@@ -120,16 +205,431 @@
     </div>
 
     <script>
-        // ===== ДАННЫЕ ПРОЕКТОВ =====
+        // ============================================================
+        // 1. PARTICLE BACKGROUND
+        // ============================================================
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.3;
+                    this.speedY = (Math.random() - 0.5) * 0.3;
+                    this.opacity = Math.random() * 0.3 + 0.1;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0, 255, 200, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                const count = Math.min(Math.floor(canvas.width * canvas.height / 15000), 80);
+                for (let i = 0; i < count; i++) particles.push(new Particle());
+            }
+
+            function connectParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(0, 255, 200, ${0.05 * (1 - dist / 150)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                connectParticles();
+                requestAnimationFrame(animateParticles);
+            }
+
+            initParticles();
+            animateParticles();
+            window.addEventListener('resize', () => { resize(); initParticles(); });
+        })();
+
+        // ============================================================
+        // 2. ТОГГЛ ЭФФЕКТОВ
+        // ============================================================
+        let effectsEnabled = true;
+        document.getElementById('effectsToggle').addEventListener('click', function() {
+            effectsEnabled = !effectsEnabled;
+            this.textContent = effectsEnabled ? '◈ ЭФФЕКТЫ' : '◈ ЭФФЕКТЫ OFF';
+            document.body.style.setProperty('--scanline-opacity', effectsEnabled ? '0.03' : '0');
+            document.getElementById('particles-canvas').style.display = effectsEnabled ? 'block' : 'none';
+            document.querySelectorAll('.glitch').forEach(el => {
+                el.style.animation = effectsEnabled ? '' : 'none';
+            });
+        });
+
+        // ============================================================
+        // 3. PROGRESS BAR
+        // ============================================================
+        const progressFill = document.getElementById('progressFill');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            progressFill.style.width = `${Math.min(progress, 100)}%`;
+        });
+
+        // ============================================================
+        // 4. BACK TO TOP
+        // ============================================================
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTopBtn.classList.toggle('visible', window.scrollY > 500);
+        });
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ============================================================
+        // 5. АКТИВНАЯ НАВИГАЦИЯ
+        // ============================================================
+        const navLinks = document.querySelectorAll('.nav-link[data-target]');
+        const sections = {
+            projects: document.getElementById('projects'),
+            stats: document.getElementById('stats'),
+            blog: document.getElementById('blog')
+        };
+
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY + 120;
+            let current = 'projects';
+            for (const [key, section] of Object.entries(sections)) {
+                if (section && section.offsetTop <= scrollPos) {
+                    current = key;
+                }
+            }
+            navLinks.forEach(link => {
+                const isActive = link.dataset.target === current;
+                link.classList.toggle('active', isActive);
+            });
+        });
+
+        // ============================================================
+        // 6. DARK WEB SIMULATOR
+        // ============================================================
+        const darkWebToggle = document.getElementById('darkWebToggle');
+        const darkWebTerminal = document.getElementById('darkWebTerminal');
+        const terminalInput = document.getElementById('terminalInput');
+        const terminalBody = document.getElementById('terminalBody');
+        const terminalClose = document.getElementById('terminalClose');
+
+        darkWebToggle.addEventListener('click', () => {
+            darkWebTerminal.classList.toggle('active');
+            if (darkWebTerminal.classList.contains('active')) {
+                terminalInput.focus();
+                addTerminalLine('> Добро пожаловать в Dark Web Simulator');
+                addTerminalLine('> Введите "help" для списка команд');
+            }
+        });
+
+        terminalClose.addEventListener('click', () => {
+            darkWebTerminal.classList.remove('active');
+        });
+
+        function addTerminalLine(text) {
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.textContent = text;
+            terminalBody.insertBefore(line, document.getElementById('terminalPrompt'));
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = terminalInput.value.trim();
+                terminalInput.value = '';
+                addTerminalLine(`> ${cmd}`);
+                handleTerminalCommand(cmd);
+            }
+        });
+
+        function handleTerminalCommand(cmd) {
+            const lower = cmd.toLowerCase();
+            if (lower === 'help') {
+                addTerminalLine('Доступные команды:');
+                addTerminalLine('  projects  — список проектов');
+                addTerminalLine('  stats     — статистика');
+                addTerminalLine('  about     — об авторе');
+                addTerminalLine('  contact   — контакты');
+                addTerminalLine('  clear     — очистить терминал');
+                addTerminalLine('  exit      — закрыть терминал');
+            } else if (lower === 'projects') {
+                addTerminalLine('📁 Проекты:');
+                addTerminalLine('  - Барабаны сепараторов (done)');
+                addTerminalLine('  - ИИ-самоулучшение (wip)');
+                addTerminalLine('  - Cyberpunk Portfolio (idea)');
+                addTerminalLine('  - Чат с нейросетью (done)');
+                addTerminalLine('  - Game Dashboard (wip)');
+                addTerminalLine('  - Neon Tetris (wip)');
+            } else if (lower === 'stats') {
+                addTerminalLine('📊 Статистика:');
+                addTerminalLine('  Всего проектов: 6');
+                addTerminalLine('  Завершено: 2');
+                addTerminalLine('  В работе: 3');
+                addTerminalLine('  Идеи: 1');
+            } else if (lower === 'about') {
+                addTerminalLine('🧑‍💻 Slip_Star — разработчик, киберпанк-энтузиаст');
+                addTerminalLine('  Создаю проекты на стыке кода, дизайна и технологий.');
+            } else if (lower === 'contact') {
+                addTerminalLine('📡 Контакты:');
+                addTerminalLine('  GitHub: https://github.com/DmitryErosh');
+                addTerminalLine('  Telegram: @di_ero');
+                addTerminalLine('  Email: di_ero@example.com');
+            } else if (lower === 'clear') {
+                const prompt = document.getElementById('terminalPrompt');
+                terminalBody.innerHTML = '';
+                terminalBody.appendChild(prompt);
+            } else if (lower === 'exit') {
+                darkWebTerminal.classList.remove('active');
+            } else {
+                addTerminalLine(`❌ Неизвестная команда: ${cmd}. Введите "help" для списка.`);
+            }
+        }
+
+        // ============================================================
+        // 7. МИНИ-ИГРА
+        // ============================================================
+        const gameMiniToggle = document.getElementById('gameMiniToggle');
+        const gameMiniContainer = document.getElementById('gameMiniContainer');
+        const gameMiniClose = document.getElementById('gameMiniClose');
+        const gameMiniCanvas = document.getElementById('gameMiniCanvas');
+        const gameMiniCtx = gameMiniCanvas.getContext('2d');
+        const gameMiniScore = document.getElementById('gameMiniScore');
+        const gameMiniRestart = document.getElementById('gameMiniRestart');
+
+        let miniGame = {
+            player: { x: 180, y: 260, w: 30, h: 20 },
+            obstacles: [],
+            score: 0,
+            gameOver: false,
+            running: false,
+            animId: null,
+            speed: 3,
+            spawnRate: 40,
+            frameCount: 0
+        };
+
+        gameMiniToggle.addEventListener('click', () => {
+            gameMiniContainer.classList.toggle('active');
+            if (gameMiniContainer.classList.contains('active')) {
+                startMiniGame();
+            } else {
+                stopMiniGame();
+            }
+        });
+
+        gameMiniClose.addEventListener('click', () => {
+            gameMiniContainer.classList.remove('active');
+            stopMiniGame();
+        });
+
+        gameMiniRestart.addEventListener('click', () => {
+            resetMiniGame();
+            startMiniGame();
+        });
+
+        function resetMiniGame() {
+            miniGame.player.x = 180;
+            miniGame.obstacles = [];
+            miniGame.score = 0;
+            miniGame.gameOver = false;
+            miniGame.frameCount = 0;
+            miniGame.speed = 3;
+            gameMiniScore.textContent = '0';
+            miniGame.running = true;
+        }
+
+        function startMiniGame() {
+            if (miniGame.running) return;
+            resetMiniGame();
+            miniGame.running = true;
+            gameLoopMini();
+        }
+
+        function stopMiniGame() {
+            miniGame.running = false;
+            if (miniGame.animId) {
+                cancelAnimationFrame(miniGame.animId);
+                miniGame.animId = null;
+            }
+        }
+
+        function gameLoopMini() {
+            if (!miniGame.running) return;
+            updateMiniGame();
+            drawMiniGame();
+            miniGame.animId = requestAnimationFrame(gameLoopMini);
+        }
+
+        function updateMiniGame() {
+    if (miniGame.gameOver) return;
+
+    miniGame.frameCount++;
+    if (miniGame.frameCount % miniGame.spawnRate === 0) {
+        const width = Math.random() * 20 + 10;
+        const height = Math.random() * 20 + 10;
+        miniGame.obstacles.push({
+            x: Math.random() * (400 - width), // ← СЛУЧАЙНАЯ ПОЗИЦИЯ ПО ГОРИЗОНТАЛИ
+            y: -height,                       // ← ПОЯВЛЯЮТСЯ СВЕРХУ
+            w: width,
+            h: height,
+            speed: miniGame.speed + Math.random() * 1.5
+        });
+    }
+
+    // Движение препятствий ВНИЗ
+    for (let i = miniGame.obstacles.length - 1; i >= 0; i--) {
+        const obs = miniGame.obstacles[i];
+        obs.y += obs.speed;                   // ← ДВИЖЕНИЕ ВНИЗ
+        if (obs.y > 300) {                    // ← ЕСЛИ ВЫШЛИ ЗА НИЖНЮЮ ГРАНИЦУ
+            miniGame.obstacles.splice(i, 1);
+            miniGame.score++;
+            gameMiniScore.textContent = miniGame.score;
+            if (miniGame.score % 10 === 0) {
+                miniGame.speed += 0.3;
+            }
+        }
+    }
+
+    // Столкновение
+    const p = miniGame.player;
+    for (const obs of miniGame.obstacles) {
+        if (p.x < obs.x + obs.w &&
+            p.x + p.w > obs.x &&
+            p.y < obs.y + obs.h &&
+            p.y + p.h > obs.y) {
+            miniGame.gameOver = true;
+            miniGame.running = false;
+            break;
+        }
+    }
+
+    // Управление клавишами (влево/вправо)
+    if (keysPressed['ArrowLeft'] || keysPressed['a']) {
+        miniGame.player.x = Math.max(0, miniGame.player.x - 6);
+    }
+    if (keysPressed['ArrowRight'] || keysPressed['d']) {
+        miniGame.player.x = Math.min(370, miniGame.player.x + 6);
+    }
+}
+
+        function drawMiniGame() {
+            const ctx = gameMiniCtx;
+            const cw = gameMiniCanvas.width;
+            const ch = gameMiniCanvas.height;
+            ctx.clearRect(0, 0, cw, ch);
+
+            // Фон
+            ctx.fillStyle = '#0a0a1a';
+            ctx.fillRect(0, 0, cw, ch);
+
+            // Сетка
+            ctx.strokeStyle = 'rgba(0, 255, 200, 0.04)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < cw; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, ch);
+                ctx.stroke();
+            }
+            for (let i = 0; i < ch; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(cw, i);
+                ctx.stroke();
+            }
+
+            // Препятствия
+            for (const obs of miniGame.obstacles) {
+                ctx.shadowColor = '#ff00c8';
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = '#ff00c8';
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                ctx.shadowBlur = 0;
+            }
+
+            // Игрок
+            ctx.shadowColor = '#00ffc8';
+            ctx.shadowBlur = 25;
+            ctx.fillStyle = '#00ffc8';
+            const p = miniGame.player;
+            ctx.fillRect(p.x, p.y, p.w, p.h);
+            ctx.shadowBlur = 0;
+
+            // Game Over
+            if (miniGame.gameOver) {
+                ctx.font = 'bold 24px Orbitron, monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = '#ff00c8';
+                ctx.shadowBlur = 30;
+                ctx.fillStyle = '#ff00c8';
+                ctx.fillText('GAME OVER', cw/2, ch/2 - 10);
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // Клавиши для игры
+        const keysPressed = {};
+        document.addEventListener('keydown', (e) => {
+            keysPressed[e.key] = true;
+            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            keysPressed[e.key] = false;
+        });
+
+        // ============================================================
+        // 8. ДАННЫЕ ПРОЕКТОВ
+        // ============================================================
         const projects = [{
             id: 1,
             title: "Барабаны сепараторов",
             icon: "🥁",
             status: "done",
             statusText: "Готово",
+            category: "tools",
+            categoryLabel: "🛠️ Инструменты",
             tags: ["HTML", "CSS", "JavaScript", "Google Sheets API"],
             desc: "Веб-приложение для учёта и замены барабанов на сепараторах. Синхронизация с Google Таблицами, история замен, экспорт в Excel.",
-            fullDesc: "Полноценное приложение для промышленного учёта. Автоматическая синхронизация с облачным хранилищем, удобный интерфейс для замены комплектующих, ведение истории всех операций. Подходит для использования на производстве.",
+            fullDesc: "Полноценное приложение для промышленного учёта. Автоматическая синхронизация с облачным хранилищем, удобный интерфейс для замены комплектующих, ведение истории всех операций.",
             date: "2026",
             link: "https://dmitryerosh.github.io/Seporator/"
         }, {
@@ -138,6 +638,8 @@
             icon: "🧠",
             status: "wip",
             statusText: "В разработке",
+            category: "ai",
+            categoryLabel: "🧠 AI",
             tags: ["HTML", "CSS", "JavaScript", "AI"],
             desc: "Концептуальный интерфейс имитации самообучения нейросети. Визуализация процесса оптимизации.",
             fullDesc: "Демонстрационный проект, показывающий, как может выглядеть интерфейс для самообучающейся системы. Включает визуализацию метрик, лог событий и имитацию циклов улучшения.",
@@ -149,9 +651,11 @@
             icon: "💻",
             status: "idea",
             statusText: "Идея",
+            category: "web",
+            categoryLabel: "🌐 Веб",
             tags: ["HTML", "CSS", "JavaScript", "Design"],
             desc: "Сайт-портфолио в стиле киберпанк с неоновой эстетикой и интерактивными элементами.",
-            fullDesc: "Экспериментальный дизайн-проект. Сочетание тёмной темы, неоновых градиентов, анимированных элементов и игровой эстетики. Исследование возможностей CSS и анимаций.",
+            fullDesc: "Экспериментальный дизайн-проект. Сочетание тёмной темы, неоновых градиентов, анимированных элементов и игровой эстетики.",
             date: "2026",
             link: "#"
         }, {
@@ -160,6 +664,8 @@
             icon: "💬",
             status: "done",
             statusText: "Готово",
+            category: "ai",
+            categoryLabel: "🧠 AI",
             tags: ["HTML", "CSS", "JavaScript", "API"],
             desc: "Диалоговый интерфейс для общения с ИИ-моделью. Имитация работы языковой модели с контекстом.",
             fullDesc: "Интерактивный чат, который имитирует работу языковой модели. Учитывает контекст диалога, имеет стильный интерфейс и визуализацию процесса 'мышления' нейросети.",
@@ -169,11 +675,13 @@
             id: 5,
             title: "Game Dashboard",
             icon: "🎮",
-            status: "wip",
-            statusText: "В разработке",
+            status: "done",
+            statusText: "Готово",
+            category: "games",
+            categoryLabel: "🎮 Игры",
             tags: ["HTML", "CSS", "JavaScript", "Gaming"],
             desc: "Игровая панель управления с анимациями и визуальными эффектами. Статистика, достижения, прогресс.",
-            fullDesc: "Проект по созданию красивого игрового дашборда. Включает анимированные графики, виджеты достижений, систему уровней и визуальные эффекты. Планируется интеграция с игровыми API.",
+            fullDesc: "Проект по созданию красивого игрового дашборда. Включает анимированные графики, виджеты достижений, систему уровней и визуальные эффекты.",
             date: "2026",
             link: "game.html"
         }, {
@@ -182,31 +690,45 @@
             icon: "🟦",
             status: "done",
             statusText: "Готово",
+            category: "games",
+            categoryLabel: "🎮 Игры",
             tags: ["HTML", "CSS", "JavaScript", "Game"],
             desc: "Классический тетрис в неоновом стиле. Управление с клавиатуры, подсчёт очков, уровни сложности.",
-            fullDesc: "Переосмысление классической игры в стиле киберпанк. Неоновая графика, пульсирующие блоки, динамическая подсветка. Игра включает систему очков, уровни сложности и сохранение рекордов.",
+            fullDesc: "Переосмысление классической игры в стиле киберпанк. Неоновая графика, пульсирующие блоки, динамическая подсветка.",
             date: "2026",
             link: "neon-tetris.html"
         }];
 
-        // ===== ДИНАМИЧЕСКИЙ ПОДСЧЁТ СТАТИСТИКИ =====
+        // ============================================================
+        // 9. СТАТИСТИКА С АНИМАЦИЕЙ ПРИ СКРОЛЛЕ
+        // ============================================================
         function updateStats() {
-            const total = projects.length;
-            const done = projects.filter(p => p.status === 'done').length;
-            const wip = projects.filter(p => p.status === 'wip').length;
-            const idea = projects.filter(p => p.status === 'idea').length;
+            const stats = [
+                { id: 'projectCount', target: projects.length },
+                { id: 'doneCount', target: projects.filter(p => p.status === 'done').length },
+                { id: 'wipCount', target: projects.filter(p => p.status === 'wip').length },
+                { id: 'ideaCount', target: projects.filter(p => p.status === 'idea').length }
+            ];
 
-            // Анимированный подсчёт
-            animateNumber('projectCount', total);
-            animateNumber('doneCount', done);
-            animateNumber('wipCount', wip);
-            animateNumber('ideaCount', idea);
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        stats.forEach(stat => {
+                            animateNumber(stat.id, stat.target);
+                        });
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            const statsSection = document.getElementById('stats');
+            if (statsSection) observer.observe(statsSection);
         }
 
         function animateNumber(elementId, target) {
             const el = document.getElementById(elementId);
+            if (!el) return;
             const current = parseInt(el.textContent) || 0;
-            const duration = 800;
+            const duration = 1000;
             const startTime = performance.now();
 
             function update(currentTime) {
@@ -215,49 +737,50 @@
                 const eased = 1 - Math.pow(1 - progress, 3);
                 const value = Math.round(current + (target - current) * eased);
                 el.textContent = value;
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                } else {
-                    el.textContent = target;
-                }
+                if (progress < 1) requestAnimationFrame(update);
+                else el.textContent = target;
             }
             requestAnimationFrame(update);
         }
 
-        // ===== ОСТАЛЬНЫЕ ФУНКЦИИ =====
-        function getAvailableTags() {
-            const tags = new Set();
-            projects.forEach(p => p.tags.forEach(t => tags.add(t)));
-            return [...tags];
-        }
-
+        // ============================================================
+        // 10. ФИЛЬТРАЦИЯ
+        // ============================================================
         let currentFilter = 'all';
+        let currentCategory = 'all';
+        let searchQuery = '';
 
-        function filterProjects(filter) {
-            currentFilter = filter;
-            
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                const isActive = btn.dataset.filter === filter;
-                btn.classList.toggle('active', isActive);
-                btn.setAttribute('aria-pressed', isActive);
-            });
-
+        function filterProjects() {
             const cards = document.querySelectorAll('.project-card');
-            cards.forEach((card, index) => {
+            let visibleCount = 0;
+
+            cards.forEach(card => {
                 const projectId = parseInt(card.dataset.id);
                 const project = projects.find(p => p.id === projectId);
                 if (!project) return;
 
-                const matches = filter === 'all' || project.status === filter;
-                card.style.display = matches ? 'block' : 'none';
-                if (matches) {
-                    setTimeout(() => card.classList.add('visible'), index * 50);
+                const matchesStatus = currentFilter === 'all' || project.status === currentFilter;
+                const matchesCategory = currentCategory === 'all' || project.category === currentCategory;
+                const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                     project.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                                     project.desc.toLowerCase().includes(searchQuery.toLowerCase());
+
+                const visible = matchesStatus && matchesCategory && matchesSearch;
+                card.style.display = visible ? 'block' : 'none';
+                if (visible) {
+                    visibleCount++;
+                    setTimeout(() => card.classList.add('visible'), 50);
                 } else {
                     card.classList.remove('visible');
                 }
             });
+
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
         }
 
+        // ============================================================
+        // 11. РЕНДЕР КАРТОЧЕК
+        // ============================================================
         function renderProjects() {
             const grid = document.getElementById('projectsGrid');
             grid.innerHTML = '';
@@ -299,26 +822,57 @@
                 grid.appendChild(card);
             });
 
-            filterProjects('all');
+            filterProjects();
         }
 
-        // ===== INTERSECTION OBSERVER ДЛЯ АНИМАЦИИ =====
-        function setupIntersectionObserver() {
-            const cards = document.querySelectorAll('.project-card');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
+        // ============================================================
+        // 12. BLOG / LAB NOTES
+        // ============================================================
+        const blogPosts = [{
+            title: "Как я делал чат с нейросетью",
+            date: "24.06.2026",
+            tags: ["AI", "API", "OpenRouter"],
+            desc: "Интеграция OpenRouter API в чат-интерфейс с поддержкой контекста и выбором модели.",
+            link: "blog-chat.html"
+        }, {
+            title: "Киберпанк-портфолио: дизайн и анимации",
+            date: "23.06.2026",
+            tags: ["Design", "CSS", "Animation"],
+            desc: "Как я создавал тёмную тему, неоновые градиенты и glitch-эффекты для портфолио.",
+            link: "blog-design.html"
+        }, {
+            title: "Neon Tetris: переосмысление классики",
+            date: "22.06.2026",
+            tags: ["GameDev", "JavaScript", "Canvas"],
+            desc: "Разработка тетриса в неоновом стиле с пульсирующими блоками и динамической подсветкой.",
+            link: "blog-tetris.html"
+        }];
+
+        function renderBlog() {
+            const grid = document.getElementById('blogGrid');
+            grid.innerHTML = '';
+
+            blogPosts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'blog-card';
+                card.innerHTML = `
+                    <div class="blog-card-header">
+                        <span class="blog-date">${post.date}</span>
+                        <div class="blog-tags">
+                            ${post.tags.map(tag => `<span>#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                    <h3>${post.title}</h3>
+                    <p>${post.desc}</p>
+                    <a href="${post.link}" class="blog-link">Читать →</a>
+                `;
+                grid.appendChild(card);
             });
-            cards.forEach(card => observer.observe(card));
         }
 
-        // ===== МОДАЛЬНОЕ ОКНО =====
+        // ============================================================
+        // 13. МОДАЛЬНОЕ ОКНО
+        // ============================================================
         function openModal(id) {
             const project = projects.find(p => p.id === id);
             if (!project) return;
@@ -327,6 +881,7 @@
             document.getElementById('modalTitle').textContent = project.title;
             document.getElementById('modalDesc').textContent = project.fullDesc || project.desc;
             document.getElementById('modalStatus').textContent = project.statusText;
+            document.getElementById('modalCategory').textContent = project.categoryLabel;
             document.getElementById('modalTags').textContent = project.tags.join(' · ');
             document.getElementById('modalDate').textContent = project.date;
             
@@ -346,7 +901,9 @@
             document.body.style.overflow = '';
         }
 
-        // ===== СОБЫТИЯ =====
+        // ============================================================
+        // 14. СОБЫТИЯ
+        // ============================================================
         document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
         document.getElementById('modalOverlay').addEventListener('click', (e) => {
             if (e.target === document.getElementById('modalOverlay')) closeModal();
@@ -355,20 +912,59 @@
             if (e.key === 'Escape') closeModal();
         });
 
+        // Фильтры по статусу
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                filterProjects(btn.dataset.filter);
-                setTimeout(setupIntersectionObserver, 100);
+                currentFilter = btn.dataset.filter;
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    const isActive = b.dataset.filter === currentFilter;
+                    b.classList.toggle('active', isActive);
+                    b.setAttribute('aria-pressed', isActive);
+                });
+                filterProjects();
             });
         });
 
-        // ===== ЗАПУСК =====
+        // Фильтры по категории
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentCategory = btn.dataset.category;
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.category === currentCategory);
+                });
+                filterProjects();
+            });
+        });
+
+        // Поиск
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+        searchInput.addEventListener('input', () => {
+            searchQuery = searchInput.value;
+            clearSearchBtn.style.display = searchQuery ? 'block' : 'none';
+            filterProjects();
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            clearSearchBtn.style.display = 'none';
+            filterProjects();
+            searchInput.focus();
+        });
+
+        // ============================================================
+        // 15. ЗАПУСК
+        // ============================================================
         updateStats();
         renderProjects();
-        setTimeout(setupIntersectionObserver, 200);
+        renderBlog();
 
-        console.log('%c✦ Project Slip_Star v2.0 ✦', 'font-size:20px; font-weight:bold; color:#00ffc8;');
-        console.log('%cДоступные теги:', 'color:#667788;', getAvailableTags().join(', '));
+        console.log('%c✦ Project Slip_Star v3.0 ✦', 'font-size:20px; font-weight:bold; color:#00ffc8;');
+        console.log('%c🎮 Мини-игра: нажмите "Игра" в правом верхнем углу', 'color:#00ffc8;');
+        console.log('%c⬛ Dark Web: нажмите "Dark Web" для терминала', 'color:#00ffc8;');
+        console.log('%c📊 Статистика анимируется при скролле', 'color:#667788;');
     </script>
 </body>
 </html>

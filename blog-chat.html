@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Notes: Чат с нейросетью · Slip_Star</title>
+    <meta name="description" content="Как я делал чат с нейросетью через OpenRouter API. Интеграция, контекст, выбор модели.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .blog-post-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .blog-post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .blog-post-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-link {
+            color: #00ffc8;
+            text-decoration: none;
+            transition: 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .back-link:hover {
+            color: #ff00c8;
+            transform: translateX(-5px);
+        }
+
+        .blog-post-content {
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.6), rgba(10, 10, 20, 0.8));
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .blog-post-content h2 {
+            color: #ccddee;
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+        }
+
+        .blog-post-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .blog-post-content p {
+            color: #8899aa;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content .highlight {
+            color: #00ffc8;
+            font-weight: 600;
+        }
+
+        .blog-post-content .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 16px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 200, 0.04);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .code-block-header:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .code-block-header .code-title {
+            color: #667788;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .code-block-header .code-toggle {
+            color: #00ffc8;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+
+        .code-block-header .code-toggle:hover {
+            color: #ff00c8;
+        }
+
+        .code-block-body {
+            display: none;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        .code-block-body.active {
+            display: block;
+            animation: codeFade 0.3s ease;
+        }
+
+        @keyframes codeFade {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-block-body pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.7;
+            color: #aabbcc;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block-body .comment {
+            color: #445566;
+        }
+        .code-block-body .string {
+            color: #88ff88;
+        }
+        .code-block-body .keyword {
+            color: #ff88ff;
+        }
+        .code-block-body .function {
+            color: #88ccff;
+        }
+        .code-block-body .variable {
+            color: #ffcc88;
+        }
+
+        .blog-post-footer {
+            border-top: 1px solid rgba(0, 255, 200, 0.05);
+            padding: 20px 0;
+            text-align: center;
+            color: #445566;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .blog-post-footer a {
+            color: #00ffc8;
+            text-decoration: none;
+        }
+
+        .blog-post-footer a:hover {
+            color: #ff00c8;
+        }
+
+        @media (max-width: 768px) {
+            .blog-post-content { padding: 20px; }
+            .blog-post-header h1 { font-size: 1.5rem; }
+            .code-block-body pre { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="blog-post-container">
+            <!-- ===== ШАПКА ===== -->
+            <div class="blog-post-header">
+                <h1>🧪 Lab Notes: Чат с нейросетью</h1>
+                <a href="index.html#blog" class="back-link">← Вернуться</a>
+            </div>
+
+            <!-- ===== СОДЕРЖАНИЕ ===== -->
+            <div class="blog-post-content">
+                <h2>📌 Задача</h2>
+                <p>Создать диалоговый интерфейс для общения с ИИ-моделью через <span class="highlight">OpenRouter API</span>. Чат должен поддерживать контекст диалога, выбор модели и работать в реальном времени.</p>
+
+                <h2>🔧 Решение</h2>
+                <p>Использовал <span class="highlight">OpenRouter API</span> — сервис, который предоставляет унифицированный доступ к множеству моделей (Llama, Mistral, Gemini и др.) через один API-ключ.</p>
+
+                <h3>Основные шаги:</h3>
+                <p>1. Получение API-ключа на <span class="highlight">openrouter.ai</span><br>
+                2. Создание интерфейса чата (HTML + CSS)<br>
+                3. Написание JavaScript-логики для отправки запросов и отображения ответов<br>
+                4. Добавление поддержки контекста (история диалога)<br>
+                5. Выбор модели через выпадающий список</p>
+
+                <!-- ===== БЛОК С КОДОМ 1 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Подключение к OpenRouter</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">// ===== КОНФИГУРАЦИЯ =====</span>
+<span class="keyword">const</span> <span class="variable">OPENROUTER_API_KEY</span> = <span class="string">'sk-or-v1-...'</span>;
+<span class="keyword">const</span> <span class="variable">OPENROUTER_URL</span> = <span class="string">'https://openrouter.ai/api/v1/chat/completions'</span>;
+
+<span class="keyword">let</span> <span class="variable">conversationHistory</span> = [];
+<span class="keyword">let</span> <span class="variable">isProcessing</span> = <span class="keyword">false</span>;
+
+<span class="comment">// ===== ДОБАВЛЕНИЕ СООБЩЕНИЯ =====</span>
+<span class="keyword">function</span> <span class="function">addMessage</span>(role, content) {
+    <span class="keyword">const</span> msgDiv = <span class="function">document</span>.<span class="function">createElement</span>(<span class="string">'div'</span>);
+    msgDiv.className = <span class="string">`chat-message ${role}`</span>;
+    msgDiv.innerHTML = <span class="string">`
+        &lt;div class="message-role"&gt;${role === 'user' ? '👤 Вы' : '🤖 Ассистент'}&lt;/div&gt;
+        ${content}
+        &lt;span class="message-time"&gt;${new Date().toLocaleTimeString()}&lt;/span&gt;
+    `</span>;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+</pre>
+                    </div>
+                </div>
+
+                <!-- ===== БЛОК С КОДОМ 2 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Отправка запроса и получение ответа</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">// ===== ОТПРАВКА ЗАПРОСА =====</span>
+<span class="keyword">async function</span> <span class="function">sendToAI</span>(userMessage) {
+    <span class="keyword">if</span> (isProcessing) <span class="keyword">return</span>;
+
+    isProcessing = <span class="keyword">true</span>;
+    conversationHistory.<span class="function">push</span>({ role: <span class="string">'user'</span>, content: userMessage });
+    <span class="function">addMessage</span>(<span class="string">'user'</span>, userMessage);
+
+    <span class="keyword">try</span> {
+        <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">fetch</span>(OPENROUTER_URL, {
+            method: <span class="string">'POST'</span>,
+            headers: {
+                <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>,
+                <span class="string">'Authorization'</span>: <span class="string">`Bearer ${OPENROUTER_API_KEY}`</span>,
+                <span class="string">'HTTP-Referer'</span>: window.location.href,
+                <span class="string">'X-Title'</span>: <span class="string">'Slip_Star Chat'</span>
+            },
+            body: JSON.stringify({
+                model: modelSelect.value,
+                messages: conversationHistory,
+                max_tokens: 1000,
+                temperature: 0.7,
+                stream: <span class="keyword">false</span>
+            })
+        });
+
+        <span class="keyword">const</span> data = <span class="keyword">await</span> response.json();
+        <span class="keyword">const</span> assistantMessage = data.choices[0].message.content;
+
+        conversationHistory.<span class="function">push</span>({ role: <span class="string">'assistant'</span>, content: assistantMessage });
+        <span class="function">addMessage</span>(<span class="string">'assistant'</span>, assistantMessage);
+
+    } <span class="keyword">catch</span> (error) {
+        <span class="function">addMessage</span>(<span class="string">'assistant'</span>, <span class="string">`⚠️ Ошибка: ${error.message}`</span>);
+    } <span class="keyword">finally</span> {
+        isProcessing = <span class="keyword">false</span>;
+        messageInput.focus();
+    }
+}
+</pre>
+                    </div>
+                </div>
+
+                <!-- ===== БЛОК С КОДОМ 3 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Автоматический fallback</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">// ===== АВТОМАТИЧЕСКИЙ FALLBACK =====</span>
+<span class="keyword">if</span> (<span class="variable">errorMsg</span>.<span class="function">includes</span>(<span class="string">'No endpoints found'</span>) || 
+    <span class="variable">errorMsg</span>.<span class="function">includes</span>(<span class="string">'Insufficient credits'</span>)) {
+    
+    <span class="keyword">if</span> (modelSelect.value !== <span class="string">'openrouter/free'</span>) {
+        statusIndicator.textContent = <span class="string">'⏳ Модель недоступна, пробую OpenRouter Free...'</span>;
+        modelSelect.value = <span class="string">'openrouter/free'</span>;
+        
+        <span class="keyword">const</span> retryResponse = <span class="keyword">await</span> <span class="function">fetch</span>(OPENROUTER_URL, {
+            method: <span class="string">'POST'</span>,
+            headers: {
+                <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>,
+                <span class="string">'Authorization'</span>: <span class="string">`Bearer ${OPENROUTER_API_KEY}`</span>
+            },
+            body: JSON.stringify({
+                model: <span class="string">'openrouter/free'</span>,
+                messages: conversationHistory,
+                max_tokens: 1000,
+                temperature: 0.7,
+                stream: <span class="keyword">false</span>
+            })
+        });
+        
+        <span class="keyword">const</span> retryData = <span class="keyword">await</span> retryResponse.json();
+        <span class="keyword">const</span> assistantMessage = retryData.choices[0].message.content;
+        <span class="function">addMessage</span>(<span class="string">'assistant'</span>, assistantMessage);
+    }
+}
+</pre>
+                    </div>
+                </div>
+
+                <h2>📊 Результат</h2>
+                <p>✅ Чат работает с несколькими моделями (Llama 3, Mistral 7B, Gemini 2)<br>
+                ✅ Поддерживает контекст диалога до 10 сообщений<br>
+                ✅ Автоматический fallback на <span class="highlight">openrouter/free</span><br>
+                ✅ Стильный киберпанк-интерфейс с неоновой эстетикой</p>
+
+                <h2>🚀 Ссылки</h2>
+                <p>
+                    <a href="chat.html" style="color: #00ffc8; text-decoration: none;">→ Открыть чат</a><br>
+                    <a href="https://openrouter.ai" target="_blank" style="color: #00ffc8; text-decoration: none;">→ OpenRouter</a>
+                </p>
+            </div>
+
+            <!-- ===== ПОДВАЛ ===== -->
+            <div class="blog-post-footer">
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span> Slip_Star · Lab Notes 
+                <span style="opacity:0.3;">//</span> 
+                <a href="index.html#blog">← Вернуться к записям</a>
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ТОГГЛ КОДА =====
+        function toggleCode(headerElement) {
+            const body = headerElement.nextElementSibling;
+            const toggle = headerElement.querySelector('.code-toggle');
+            
+            if (body.classList.contains('active')) {
+                body.classList.remove('active');
+                toggle.textContent = '▼ Показать код';
+            } else {
+                body.classList.add('active');
+                toggle.textContent = '▲ Скрыть код';
+            }
+        }
+
+        // Консольное приветствие
+        console.log('%c🧪 Lab Notes: Чат с нейросетью', 'font-size:18px; font-weight:bold; color:#00ffc8;');
+        console.log('%cКод можно разворачивать и сворачивать.', 'color:#667788;');
+    </script>
+</body>
+</html>

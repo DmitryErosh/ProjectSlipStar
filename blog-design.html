@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Notes: Киберпанк-портфолио · Slip_Star</title>
+    <meta name="description" content="Как я создавал тёмную тему, неоновые градиенты и glitch-эффекты для портфолио.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .blog-post-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .blog-post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .blog-post-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #00ffc8, #ff00c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-link {
+            color: #00ffc8;
+            text-decoration: none;
+            transition: 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .back-link:hover {
+            color: #ff00c8;
+            transform: translateX(-5px);
+        }
+
+        .blog-post-content {
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.6), rgba(10, 10, 20, 0.8));
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .blog-post-content h2 {
+            color: #ccddee;
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+        }
+
+        .blog-post-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .blog-post-content h3 {
+            color: #aabbcc;
+            font-size: 1.1rem;
+            margin: 20px 0 10px;
+        }
+
+        .blog-post-content p {
+            color: #8899aa;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content .highlight {
+            color: #00ffc8;
+            font-weight: 600;
+        }
+
+        .blog-post-content .highlight-pink {
+            color: #ff00c8;
+            font-weight: 600;
+        }
+
+        .blog-post-content ul {
+            color: #8899aa;
+            line-height: 1.8;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content ul li {
+            margin-bottom: 5px;
+        }
+
+        .blog-post-content .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 16px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 200, 0.04);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .code-block-header:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .code-block-header .code-title {
+            color: #667788;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .code-block-header .code-toggle {
+            color: #00ffc8;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+
+        .code-block-header .code-toggle:hover {
+            color: #ff00c8;
+        }
+
+        .code-block-body {
+            display: none;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        .code-block-body.active {
+            display: block;
+            animation: codeFade 0.3s ease;
+        }
+
+        @keyframes codeFade {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-block-body pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.7;
+            color: #aabbcc;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block-body .comment {
+            color: #445566;
+        }
+        .code-block-body .string {
+            color: #88ff88;
+        }
+        .code-block-body .keyword {
+            color: #ff88ff;
+        }
+        .code-block-body .property {
+            color: #88ccff;
+        }
+        .code-block-body .selector {
+            color: #ffcc88;
+        }
+        .code-block-body .value {
+            color: #88ffaa;
+        }
+
+        .blog-post-footer {
+            border-top: 1px solid rgba(0, 255, 200, 0.05);
+            padding: 20px 0;
+            text-align: center;
+            color: #445566;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .blog-post-footer a {
+            color: #00ffc8;
+            text-decoration: none;
+        }
+
+        .blog-post-footer a:hover {
+            color: #ff00c8;
+        }
+
+        .screenshot-placeholder {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 200, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            color: #445566;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin: 15px 0;
+        }
+
+        .screenshot-placeholder .icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .blog-post-content { padding: 20px; }
+            .blog-post-header h1 { font-size: 1.5rem; }
+            .code-block-body pre { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="blog-post-container">
+            <!-- ===== ШАПКА ===== -->
+            <div class="blog-post-header">
+                <h1>🧪 Lab Notes: Киберпанк-портфолио</h1>
+                <a href="index.html#blog" class="back-link">← Вернуться</a>
+            </div>
+
+            <!-- ===== СОДЕРЖАНИЕ ===== -->
+            <div class="blog-post-content">
+                <h2>📌 Задача</h2>
+                <p>Создать сайт-портфолио в стиле <span class="highlight">киберпанк</span> с неоновой эстетикой, тёмной темой и интерактивными эффектами. Главная цель — передать атмосферу футуристического города, используя только HTML, CSS и JavaScript.</p>
+
+                <div class="screenshot-placeholder">
+                    <span class="icon">🌃</span>
+                    Скриншот главной страницы в стиле киберпанк
+                </div>
+
+                <h2>🎨 Цветовая палитра и атмосфера</h2>
+                <p>Для создания киберпанк-атмосферы я выбрал следующие элементы:</p>
+                <ul>
+                    <li><span class="highlight">Тёмный фон</span> — <code style="color:#445566;">#0a0a0f</code> с радиальными градиентами</li>
+                    <li><span class="highlight-pink">Неоновый розовый</span> — <code style="color:#ff00c8;">#ff00c8</code></li>
+                    <li><span class="highlight">Неоновый циан</span> — <code style="color:#00ffc8;">#00ffc8</code></li>
+                    <li><span class="highlight-pink">Градиенты</span> — смешение циана и розового для текста и рамок</li>
+                </ul>
+
+                <div class="screenshot-placeholder">
+                    <span class="icon">🎨</span>
+                    Скриншот цветовой схемы и градиентов
+                </div>
+
+                <!-- ===== БЛОК С КОДОМ 1 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: CSS-переменные и градиенты</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">/* ===== ГЛОБАЛЬНЫЕ СТИЛИ ===== */</span>
+<span class="selector">:root</span> {
+    <span class="property">--bg-primary</span>: <span class="value">#0a0a0f</span>;
+    <span class="property">--bg-secondary</span>: <span class="value">#12121f</span>;
+    <span class="property">--text-primary</span>: <span class="value">#e0e0e0</span>;
+    <span class="property">--text-secondary</span>: <span class="value">#8899aa</span>;
+    <span class="property">--neon-cyan</span>: <span class="value">#00ffc8</span>;
+    <span class="property">--neon-pink</span>: <span class="value">#ff00c8</span>;
+    <span class="property">--neon-gold</span>: <span class="value">#ffcc00</span>;
+}
+
+<span class="selector">body</span> {
+    <span class="property">background</span>: <span class="value">var(--bg-primary)</span>;
+    <span class="property">background-image</span>: 
+        <span class="value">radial-gradient(ellipse at 10% 20%, rgba(0, 255, 200, 0.05) 0%, transparent 60%)</span>,
+        <span class="value">radial-gradient(ellipse at 90% 80%, rgba(255, 0, 200, 0.05) 0%, transparent 60%)</span>;
+}
+
+<span class="comment">/* Градиент для заголовков */</span>
+<span class="selector">.logo</span> {
+    <span class="property">background</span>: <span class="value">linear-gradient(135deg, var(--neon-cyan), var(--neon-pink))</span>;
+    <span class="property">-webkit-background-clip</span>: <span class="value">text</span>;
+    <span class="property">-webkit-text-fill-color</span>: <span class="value">transparent</span>;
+}
+</pre>
+                    </div>
+                </div>
+
+                <h2>✨ Glitch-эффекты</h2>
+                <p>Один из ключевых элементов киберпанк-эстетики — эффект <span class="highlight">глитча</span> (сбоя изображения). Я реализовал его с помощью CSS-псевдоэлементов и анимаций.</p>
+
+                <!-- ===== БЛОК С КОДОМ 2 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Glitch-эффект на CSS</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">/* ===== GLITCH ЭФФЕКТ ===== */</span>
+<span class="selector">.glitch</span> {
+    <span class="property">position</span>: <span class="value">relative</span>;
+    <span class="property">display</span>: <span class="value">inline-block</span>;
+}
+
+<span class="selector">.glitch::before</span>,
+<span class="selector">.glitch::after</span> {
+    <span class="property">content</span>: <span class="value">attr(data-text)</span>;
+    <span class="property">position</span>: <span class="value">absolute</span>;
+    <span class="property">top</span>: <span class="value">0</span>;
+    <span class="property">left</span>: <span class="value">0</span>;
+    <span class="property">width</span>: <span class="value">100%</span>;
+    <span class="property">height</span>: <span class="value">100%</span>;
+    <span class="property">pointer-events</span>: <span class="value">none</span>;
+}
+
+<span class="selector">.glitch::before</span> {
+    <span class="property">color</span>: <span class="value">var(--neon-pink)</span>;
+    <span class="property">animation</span>: <span class="value">glitch1 2s infinite</span>;
+}
+
+<span class="selector">.glitch::after</span> {
+    <span class="property">color</span>: <span class="value">var(--neon-cyan)</span>;
+    <span class="property">animation</span>: <span class="value">glitch2 2s infinite</span>;
+}
+
+<span class="keyword">@keyframes</span> glitch1 {
+    0%, 90%, 100% { <span class="property">transform</span>: <span class="value">translate(0)</span>; <span class="property">opacity</span>: <span class="value">0</span>; }
+    92% { <span class="property">transform</span>: <span class="value">translate(-2px, 1px)</span>; <span class="property">opacity</span>: <span class="value">0.7</span>; }
+    94% { <span class="property">transform</span>: <span class="value">translate(2px, -1px)</span>; <span class="property">opacity</span>: <span class="value">0.5</span>; }
+}
+</pre>
+                    </div>
+                </div>
+
+                <h2>🖥️ Scanline и CRT-эффект</h2>
+                <p>Для имитации старого монитора я добавил наложение <span class="highlight">scanline</span> — горизонтальных линий, которые создают эффект экрана ЭЛТ.</p>
+
+                <!-- ===== БЛОК С КОДОМ 3 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Scanline-оверлей</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">/* ===== SCANLINE / CRT OVERLAY ===== */</span>
+<span class="selector">body::before</span> {
+    <span class="property">content</span>: <span class="value">''</span>;
+    <span class="property">position</span>: <span class="value">fixed</span>;
+    <span class="property">top</span>: <span class="value">0</span>;
+    <span class="property">left</span>: <span class="value">0</span>;
+    <span class="property">width</span>: <span class="value">100%</span>;
+    <span class="property">height</span>: <span class="value">100%</span>;
+    <span class="property">background</span>: <span class="value">repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0) 0px,
+        rgba(0,0,0,0) 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+    )</span>;
+    <span class="property">pointer-events</span>: <span class="value">none</span>;
+    <span class="property">z-index</span>: <span class="value">9999</span>;
+    <span class="property">opacity</span>: <span class="value">var(--scanline-opacity)</span>;
+}
+
+<span class="comment">/* Виньетка */</span>
+<span class="selector">body::after</span> {
+    <span class="property">content</span>: <span class="value">''</span>;
+    <span class="property">position</span>: <span class="value">fixed</span>;
+    <span class="property">top</span>: <span class="value">0</span>;
+    <span class="property">left</span>: <span class="value">0</span>;
+    <span class="property">width</span>: <span class="value">100%</span>;
+    <span class="property">height</span>: <span class="value">100%</span>;
+    <span class="property">background</span>: <span class="value">radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.3) 100%)</span>;
+    <span class="property">pointer-events</span>: <span class="value">none</span>;
+    <span class="property">z-index</span>: <span class="value">9998</span>;
+}
+</pre>
+                    </div>
+                </div>
+
+                <h2>🎮 Particle Background</h2>
+                <p>Фоновые частицы создают ощущение движения и глубины. Они соединены линиями, образуя подобие нейронной сети или городских огней.</p>
+
+                <!-- ===== БЛОК С КОДОМ 4 ===== -->
+                <div class="code-block">
+                    <div class="code-block-header" onclick="toggleCode(this)">
+                        <span class="code-title">📄 Код: Particle System</span>
+                        <span class="code-toggle">▼ Показать код</span>
+                    </div>
+                    <div class="code-block-body">
+                        <pre>
+<span class="comment">// ===== PARTICLE BACKGROUND =====</span>
+<span class="keyword">class</span> <span class="function">Particle</span> {
+    <span class="function">constructor</span>() {
+        <span class="keyword">this</span>.x = Math.random() * canvas.width;
+        <span class="keyword">this</span>.y = Math.random() * canvas.height;
+        <span class="keyword">this</span>.size = Math.random() * 2 + 0.5;
+        <span class="keyword">this</span>.speedX = (Math.random() - 0.5) * 0.3;
+        <span class="keyword">this</span>.speedY = (Math.random() - 0.5) * 0.3;
+        <span class="keyword">this</span>.opacity = Math.random() * 0.3 + 0.1;
+    }
+    
+    <span class="function">update</span>() {
+        <span class="keyword">this</span>.x += <span class="keyword">this</span>.speedX;
+        <span class="keyword">this</span>.y += <span class="keyword">this</span>.speedY;
+        <span class="keyword">if</span> (<span class="keyword">this</span>.x < 0 || <span class="keyword">this</span>.x > canvas.width) <span class="keyword">this</span>.speedX *= -1;
+        <span class="keyword">if</span> (<span class="keyword">this</span>.y < 0 || <span class="keyword">this</span>.y > canvas.height) <span class="keyword">this</span>.speedY *= -1;
+    }
+    
+    <span class="function">draw</span>() {
+        ctx.beginPath();
+        ctx.arc(<span class="keyword">this</span>.x, <span class="keyword">this</span>.y, <span class="keyword">this</span>.size, 0, Math.PI * 2);
+        ctx.fillStyle = <span class="string">`rgba(0, 255, 200, ${this.opacity})`</span>;
+        ctx.fill();
+    }
+}
+
+<span class="comment">// Соединение частиц линиями</span>
+<span class="keyword">function</span> <span class="function">connectParticles</span>() {
+    <span class="keyword">for</span> (<span class="keyword">let</span> i = 0; i < particles.length; i++) {
+        <span class="keyword">for</span> (<span class="keyword">let</span> j = i + 1; j < particles.length; j++) {
+            <span class="keyword">const</span> dx = particles[i].x - particles[j].x;
+            <span class="keyword">const</span> dy = particles[i].y - particles[j].y;
+            <span class="keyword">const</span> dist = Math.sqrt(dx * dx + dy * dy);
+            <span class="keyword">if</span> (dist < 150) {
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = <span class="string">`rgba(0, 255, 200, ${0.05 * (1 - dist / 150)})`</span>;
+                ctx.stroke();
+            }
+        }
+    }
+}
+</pre>
+                    </div>
+                </div>
+
+                <h2>📊 Результат</h2>
+                <p>✅ Тёмная тема с неоновыми акцентами<br>
+                ✅ Glitch-эффекты на заголовках<br>
+                ✅ Scanline и CRT-оверлей для атмосферы<br>
+                ✅ Particle background с анимацией<br>
+                ✅ Адаптивный дизайн для всех устройств</p>
+
+                <h2>🚀 Ссылки</h2>
+                <p>
+                    <a href="index.html" style="color: #00ffc8; text-decoration: none;">→ Открыть портфолио</a><br>
+                    <a href="https://github.com/DmitryErosh/ProjectSlipStar" target="_blank" style="color: #00ffc8; text-decoration: none;">→ Исходный код на GitHub</a>
+                </p>
+            </div>
+
+            <!-- ===== ПОДВАЛ ===== -->
+            <div class="blog-post-footer">
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span> Slip_Star · Lab Notes 
+                <span style="opacity:0.3;">//</span> 
+                <a href="index.html#blog">← Вернуться к записям</a>
+                <span class="glow" style="color: #00ffc8; opacity: 0.4;">✦</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ТОГГЛ КОДА =====
+        function toggleCode(headerElement) {
+            const body = headerElement.nextElementSibling;
+            const toggle = headerElement.querySelector('.code-toggle');
+            
+            if (body.classList.contains('active')) {
+                body.classList.remove('active');
+                toggle.textContent = '▼ Показать код';
+            } else {
+                body.classList.add('active');
+                toggle.textContent = '▲ Скрыть код';
+            }
+        }
+
+        console.log('%c🧪 Lab Notes: Киберпанк-портфолио', 'font-size:18px; font-weight:bold; color:#00ffc8;');
+        console.log('%cДизайн, градиенты, glitch-эффекты и анимации.', 'color:#667788;');
+    </script>
+</body>
+</html>
